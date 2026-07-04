@@ -1,0 +1,281 @@
+[
+    {
+        "file": "tutorial004_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "constant_name": "SECRET_KEY",
+        "value": "'09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'",
+        "value_type": "str",
+        "line": 13
+    },
+    {
+        "file": "tutorial004_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "constant_name": "ALGORITHM",
+        "value": "'HS256'",
+        "value_type": "str",
+        "line": 14
+    },
+    {
+        "file": "tutorial004_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "constant_name": "ACCESS_TOKEN_EXPIRE_MINUTES",
+        "value": "30",
+        "value_type": "int",
+        "line": 15
+    },
+    {
+        "file": "tutorial004_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_an_py310.py",
+        "constant_name": "DUMMY_HASH",
+        "value": "password_hash.hash('dummypassword')",
+        "value_type": "Call",
+        "line": 51
+    },
+    {
+        "file": "tutorial004_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_py310.py",
+        "constant_name": "SECRET_KEY",
+        "value": "'09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'",
+        "value_type": "str",
+        "line": 12
+    },
+    {
+        "file": "tutorial004_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_py310.py",
+        "constant_name": "ALGORITHM",
+        "value": "'HS256'",
+        "value_type": "str",
+        "line": 13
+    },
+    {
+        "file": "tutorial004_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_py310.py",
+        "constant_name": "ACCESS_TOKEN_EXPIRE_MINUTES",
+        "value": "30",
+        "value_type": "int",
+        "line": 14
+    },
+    {
+        "file": "tutorial004_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial004_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial004_py310.py",
+        "constant_name": "DUMMY_HASH",
+        "value": "password_hash.hash('dummypassword')",
+        "value_type": "Call",
+        "line": 50
+    },
+    {
+        "file": "tutorial005_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "constant_name": "SECRET_KEY",
+        "value": "'09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'",
+        "value_type": "str",
+        "line": 17
+    },
+    {
+        "file": "tutorial005_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "constant_name": "ALGORITHM",
+        "value": "'HS256'",
+        "value_type": "str",
+        "line": 18
+    },
+    {
+        "file": "tutorial005_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "constant_name": "ACCESS_TOKEN_EXPIRE_MINUTES",
+        "value": "30",
+        "value_type": "int",
+        "line": 19
+    },
+    {
+        "file": "tutorial005_an_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_an_py310.py",
+        "constant_name": "DUMMY_HASH",
+        "value": "password_hash.hash('dummypassword')",
+        "value_type": "Call",
+        "line": 63
+    },
+    {
+        "file": "tutorial005_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_py310.py",
+        "constant_name": "SECRET_KEY",
+        "value": "'09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'",
+        "value_type": "str",
+        "line": 16
+    },
+    {
+        "file": "tutorial005_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_py310.py",
+        "constant_name": "ALGORITHM",
+        "value": "'HS256'",
+        "value_type": "str",
+        "line": 17
+    },
+    {
+        "file": "tutorial005_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_py310.py",
+        "constant_name": "ACCESS_TOKEN_EXPIRE_MINUTES",
+        "value": "30",
+        "value_type": "int",
+        "line": 18
+    },
+    {
+        "file": "tutorial005_py310.py",
+        "repo_path": "fastapi-master/docs_src/security/tutorial005_py310.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/docs_src/security/tutorial005_py310.py",
+        "constant_name": "DUMMY_HASH",
+        "value": "password_hash.hash('dummypassword')",
+        "value_type": "Call",
+        "line": 62
+    },
+    {
+        "file": "shared.py",
+        "repo_path": "fastapi-master/fastapi/_compat/shared.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/_compat/shared.py",
+        "constant_name": "_T",
+        "value": "TypeVar('_T')",
+        "value_type": "Call",
+        "line": 22
+    },
+    {
+        "file": "shared.py",
+        "repo_path": "fastapi-master/fastapi/_compat/shared.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/_compat/shared.py",
+        "constant_name": "PYDANTIC_VERSION_MINOR_TUPLE",
+        "value": "tuple((int(x) for x in PYDANTIC_VERSION.split('.')[:2]))",
+        "value_type": "Call",
+        "line": 31
+    },
+    {
+        "file": "background.py",
+        "repo_path": "fastapi-master/fastapi/background.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/background.py",
+        "constant_name": "P",
+        "value": "ParamSpec('P')",
+        "value_type": "Call",
+        "line": 8
+    },
+    {
+        "file": "concurrency.py",
+        "repo_path": "fastapi-master/fastapi/concurrency.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/concurrency.py",
+        "constant_name": "_T",
+        "value": "TypeVar('_T')",
+        "value_type": "Call",
+        "line": 14
+    },
+    {
+        "file": "utils.py",
+        "repo_path": "fastapi-master/fastapi/dependencies/utils.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/dependencies/utils.py",
+        "constant_name": "_STREAM_ORIGINS",
+        "value": "{AsyncIterable, AsyncIterator, AsyncGenerator, Iterable, Iterator, Generator}",
+        "value_type": "Set",
+        "line": 266
+    },
+    {
+        "file": "constants.py",
+        "repo_path": "fastapi-master/fastapi/openapi/constants.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/openapi/constants.py",
+        "constant_name": "METHODS_WITH_BODY",
+        "value": "{'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH'}",
+        "value_type": "set",
+        "line": 1
+    },
+    {
+        "file": "constants.py",
+        "repo_path": "fastapi-master/fastapi/openapi/constants.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/openapi/constants.py",
+        "constant_name": "REF_PREFIX",
+        "value": "'#/components/schemas/'",
+        "value_type": "str",
+        "line": 2
+    },
+    {
+        "file": "constants.py",
+        "repo_path": "fastapi-master/fastapi/openapi/constants.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/openapi/constants.py",
+        "constant_name": "REF_TEMPLATE",
+        "value": "'#/components/schemas/{model}'",
+        "value_type": "str",
+        "line": 3
+    },
+    {
+        "file": "routing.py",
+        "repo_path": "fastapi-master/fastapi/routing.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/routing.py",
+        "constant_name": "_T",
+        "value": "TypeVar('_T')",
+        "value_type": "Call",
+        "line": 181
+    },
+    {
+        "file": "routing.py",
+        "repo_path": "fastapi-master/fastapi/routing.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/routing.py",
+        "constant_name": "_FASTAPI_SCOPE_KEY",
+        "value": "'fastapi'",
+        "value_type": "str",
+        "line": 827
+    },
+    {
+        "file": "routing.py",
+        "repo_path": "fastapi-master/fastapi/routing.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/routing.py",
+        "constant_name": "_FASTAPI_EFFECTIVE_ROUTE_CONTEXT_KEY",
+        "value": "'effective_route_context'",
+        "value_type": "str",
+        "line": 828
+    },
+    {
+        "file": "routing.py",
+        "repo_path": "fastapi-master/fastapi/routing.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/routing.py",
+        "constant_name": "_FASTAPI_FRONTEND_PATH_KEY",
+        "value": "'frontend_path'",
+        "value_type": "str",
+        "line": 829
+    },
+    {
+        "file": "routing.py",
+        "repo_path": "fastapi-master/fastapi/routing.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/routing.py",
+        "constant_name": "_FASTAPI_INCLUDED_ROUTER_KEY",
+        "value": "'included_router'",
+        "value_type": "str",
+        "line": 830
+    },
+    {
+        "file": "routing.py",
+        "repo_path": "fastapi-master/fastapi/routing.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/routing.py",
+        "constant_name": "_SCOPE_MISSING",
+        "value": "object()",
+        "value_type": "Call",
+        "line": 834
+    },
+    {
+        "file": "sse.py",
+        "repo_path": "fastapi-master/fastapi/sse.py",
+        "github_url": "https://github.com/fastapi/fastapi/blob/master/fastapi-master/fastapi/sse.py",
+        "constant_name": "KEEPALIVE_COMMENT",
+        "value": "b': ping\\n\\n'",
+        "value_type": "bytes",
+        "line": 231
+    }
+]

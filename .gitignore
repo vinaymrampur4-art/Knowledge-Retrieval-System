@@ -1,0 +1,30 @@
+# Virtual Environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+
+# Environment Variables
+.env
+
+# Logs
+logs/
+
+# Generated databases
+chroma_db/
+outputs/bm25/
+
+# Python cache
+.pytest_cache/
+.mypy_cache/
+
+# OS files
+Thumbs.db
+.DS_Store

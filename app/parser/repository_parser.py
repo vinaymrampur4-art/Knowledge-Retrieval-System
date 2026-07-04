@@ -1,0 +1,319 @@
+"""
+repository_parser.py
+
+Scans an entire repository and delegates parsing to the
+individual AST parsers.
+"""
+
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+
+from app.core.logger import logger
+from app.core.config import GITHUB_REPOSITORY
+
+from app.models.parser_result import ParserResult
+from app.models.parsed_file import ParsedFile
+
+from app.parser.class_parser import ClassParser
+from app.parser.function_parser import FunctionParser
+from app.parser.import_parser import ImportParser
+from app.parser.constant_parser import ConstantParser
+from app.parser.inheritance import InheritanceResolver
+
+from app.utils.path_utils import (
+    build_repo_path,
+    build_github_url,
+    build_module_name,
+)
+
+
+class RepositoryParser:
+    """
+    Parses an entire repository.
+
+    Automatically ignores directories that normally do not
+    contain production source code.
+    """
+
+    IGNORE_DIRECTORIES = {
+
+        "__pycache__",
+
+        ".pytest_cache",
+
+        ".mypy_cache",
+
+        ".ruff_cache",
+
+        ".venv",
+
+        "venv",
+
+        ".git",
+
+        ".github",
+
+        "tests",
+
+        "test",
+
+        "docs",
+
+        "docs_src",
+
+        "scripts",
+
+        "examples",
+
+        "benchmarks",
+
+        "site-packages",
+
+        "node_modules",
+    }
+
+    def __init__(self):
+
+        self.class_parser = ClassParser()
+
+        self.function_parser = FunctionParser()
+
+        self.import_parser = ImportParser()
+
+        self.constant_parser = ConstantParser()
+
+        self.inheritance_resolver = InheritanceResolver()
+
+    # --------------------------------------------------------
+
+    def _should_skip_file(
+        self,
+        file_path: Path,
+    ) -> bool:
+        """
+        Returns True if the file is inside an ignored directory.
+        """
+
+        return any(
+
+            part in self.IGNORE_DIRECTORIES
+
+            for part in file_path.parts
+
+        )
+
+    # --------------------------------------------------------
+
+    def parse(
+        self,
+        repository_path: str | Path,
+    ) -> ParserResult:
+
+        repository_path = Path(repository_path)
+
+        repository_root = repository_path
+
+        github_repo = GITHUB_REPOSITORY
+
+        result = ParserResult()
+
+        logger.info(
+            f"Scanning repository: {repository_path.name}"
+        )
+
+        python_files = []
+
+        for file in repository_path.rglob("*.py"):
+
+            if self._should_skip_file(file):
+
+                continue
+
+            python_files.append(file)
+
+        logger.info(
+            f"Found {len(python_files)} Python files."
+        )
+
+        logger.info(
+            f"Parsing {len(python_files)} Python files..."
+        )
+
+        for file_path in python_files:
+
+            try:
+
+                source = file_path.read_text(
+                    encoding="utf-8",
+                    errors="ignore",
+                )
+
+                tree = ast.parse(source)
+
+            except Exception as e:
+
+                logger.warning(
+                    f"Failed to parse {file_path}: {e}"
+                )
+
+                continue
+
+            repo_path = build_repo_path(
+                file_path,
+                repository_root,
+            )
+
+            github_url = build_github_url(
+                github_repo,
+                repo_path,
+            )
+
+            parsed_file = ParsedFile(
+
+                file_name=file_path.name,
+
+                repo_path=repo_path,
+
+                github_url=github_url,
+
+                module_name=build_module_name(
+                    repo_path
+                ),
+
+                docstring=ast.get_docstring(tree),
+
+                classes=[],
+
+                functions=[],
+
+                imports=[],
+
+                constants=[],
+            )
+
+            try:
+
+                parsed_file.classes = (
+                    self.class_parser.parse_classes(
+                        tree=tree,
+                        source=source,
+                        file_path=file_path,
+                        repository_root=repository_root,
+                        github_repo=github_repo,
+                    )
+                )
+
+                result.classes.extend(
+                    parsed_file.classes
+                )
+
+            except Exception:
+
+                logger.exception(
+                    f"Class parser failed: {file_path}"
+                )
+
+            try:
+
+                parsed_file.functions = (
+                    self.function_parser.parse_functions(
+                        tree=tree,
+                        source=source,
+                        file_path=file_path,
+                        repository_root=repository_root,
+                        github_repo=github_repo,
+                    )
+                )
+
+                result.functions.extend(
+                    parsed_file.functions
+                )
+
+            except Exception:
+
+                logger.exception(
+                    f"Function parser failed: {file_path}"
+                )
+
+            try:
+
+                parsed_file.imports = (
+                    self.import_parser.parse_imports(
+                        tree=tree,
+                        file_path=file_path,
+                        repository_root=repository_root,
+                        github_repo=github_repo,
+                    )
+                )
+
+                result.imports.extend(
+                    parsed_file.imports
+                )
+
+            except Exception:
+
+                logger.exception(
+                    f"Import parser failed: {file_path}"
+                )
+
+            try:
+
+                parsed_file.constants = (
+                    self.constant_parser.parse_constants(
+                        tree=tree,
+                        file_path=file_path,
+                        repository_root=repository_root,
+                        github_repo=github_repo,
+                    )
+                )
+
+                result.constants.extend(
+                    parsed_file.constants
+                )
+
+            except Exception:
+
+                logger.exception(
+                    f"Constant parser failed: {file_path}"
+                )
+
+            result.files.append(
+                parsed_file
+            )
+
+        self.inheritance_resolver.resolve(
+            result.classes
+        )
+
+        total_methods = sum(
+            len(cls.methods)
+            for cls in result.classes
+        )
+
+        logger.info(
+            f"Extracted {len(result.files)} files."
+        )
+
+        logger.info(
+            f"Extracted {len(result.classes)} classes."
+        )
+
+        logger.info(
+            f"Extracted {total_methods} methods."
+        )
+
+        logger.info(
+            f"Extracted {len(result.functions)} functions."
+        )
+
+        logger.info(
+            f"Extracted {len(result.imports)} imports."
+        )
+
+        logger.info(
+            f"Extracted {len(result.constants)} constants."
+        )
+
+        return result

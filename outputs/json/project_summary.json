@@ -1,0 +1,8 @@
+{
+    "repository": "fastapi-master",
+    "classes": 321,
+    "methods": 236,
+    "functions": 748,
+    "imports": 1789,
+    "constants": 31
+}
