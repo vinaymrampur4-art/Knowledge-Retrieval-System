@@ -1,72 +1,64 @@
 # Knowledge Retrieval System (KRS)
 
-A hybrid code retrieval system that indexes Python repositories and enables semantic and keyword-based search through an MCP (Model Context Protocol) server.
+A hybrid code retrieval system that indexes Python repositories and provides semantic and keyword-based code search through an MCP (Model Context Protocol) server.
 
-The project combines AST-based code parsing, vector embeddings, keyword search, and reranking to provide accurate retrieval of source code and repository metadata.
+The system combines AST-based parsing, vector embeddings, BM25 retrieval, reranking, and metadata filtering to enable efficient repository exploration and code understanding.
 
 ---
 
-# Features
+## Features
 
 - AST-based repository parsing
 - Automatic code chunking
-- ChromaDB vector indexing
-- BM25 keyword indexing
-- Hybrid retrieval (Dense + BM25)
+- Dense semantic retrieval using BGE embeddings
+- BM25 keyword retrieval
+- Hybrid retrieval pipeline
 - Reciprocal Rank Fusion (RRF)
 - CrossEncoder reranking
 - Metadata filtering
-- Repository statistics
-- Repository reporting tools
-- MCP Server integration
-- Configurable embedding models
-- Configurable reranker models
+- ChromaDB vector storage
+- Repository statistics and reports
+- MCP server integration
+- Configurable embedding and reranking models
 
 ---
 
-# Retrieval Pipeline
+## Retrieval Pipeline
 
-```
+```text
 Repository
-        │
-        ▼
+    ↓
 Repository Parser
-        │
-        ▼
-AST Chunking
-        │
-        ▼
+    ↓
+AST Parsing
+    ↓
+Chunk Generation
+    ↓
 Embedding Generation
-        │
-        ▼
+    ↓
 BM25 Index + ChromaDB Index
-        │
-        ▼
-Hybrid Retrieval
-(Dense + BM25)
-        │
-        ▼
+    ↓
+Dense Retrieval + BM25 Retrieval
+    ↓
 Reciprocal Rank Fusion (RRF)
-        │
-        ▼
+    ↓
 CrossEncoder Reranker
-        │
-        ▼
+    ↓
 MCP Server
 ```
 
 ---
 
-# Project Structure
+## Project Structure
 
 ```text
-Knowledge_Retrieval_System/
+Knowledge-Retrieval-System/
 
-│
 ├── app/
 │   ├── chunker/
 │   ├── core/
 │   ├── embedding/
+│   ├── exporter/
 │   ├── indexing/
 │   ├── parser/
 │   ├── reports/
@@ -78,22 +70,18 @@ Knowledge_Retrieval_System/
 │
 ├── repositories/
 │
-├── outputs/
-│
 ├── tests/
 │
-├── docs/
+├── outputs/
 │
+├── README.md
 ├── requirements.txt
-│
-├── .env
-│
-└── README.md
+└── .env
 ```
 
 ---
 
-# Technologies Used
+## Technologies Used
 
 - Python
 - FastMCP
@@ -108,27 +96,27 @@ Knowledge_Retrieval_System/
 
 ---
 
-# Installation
+## Installation
 
-Clone the repository
-
-```bash
-git clone <repository-url>
-```
-
-Navigate to the project directory
+Clone the repository:
 
 ```bash
-cd Knowledge_Retrieval_System
+git clone https://github.com/vinaymrampur4-art/Knowledge-Retrieval-System.git
 ```
 
-Create a virtual environment
+Move into the project directory:
+
+```bash
+cd Knowledge-Retrieval-System
+```
+
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the environment
+Activate the environment:
 
 ### Windows
 
@@ -142,7 +130,7 @@ Activate the environment
 source .venv/bin/activate
 ```
 
-Install dependencies
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -150,9 +138,9 @@ pip install -r requirements.txt
 
 ---
 
-# Configuration
+## Configuration
 
-The project uses a `.env` file for configuration.
+Project configuration is managed through the `.env` file.
 
 Example:
 
@@ -170,25 +158,39 @@ MAX_RESULTS=20
 
 ---
 
-# Running the Project
+## Building the Index
 
-## Build the Index
+Generate BM25 indexes and vector embeddings:
 
 ```bash
 python -m tests.test_index_pipeline
 ```
 
-## Start the MCP Server
+---
+
+## Running the MCP Server
+
+Start the MCP server:
 
 ```bash
 python -m mcp_server.server
 ```
 
+Default configuration:
+
+```text
+Host: 127.0.0.1
+Port: 8000
+Endpoint: /mcp
+```
+
 ---
 
-# MCP Tools
+## MCP Tools
 
-The MCP server currently provides the following tools:
+The MCP server currently provides:
+
+### Search Tools
 
 - Search Repository
 - Search Methods
@@ -196,23 +198,25 @@ The MCP server currently provides the following tools:
 - Search Functions
 - Search Files
 - Search Code Blocks
+
+### Lookup Tools
+
 - Lookup by ID
 - Lookup by Metadata Attributes
+
+### Reporting Tools
+
 - Repository Statistics
 - Repository Reports
+- Branch Reports
+- Class Reports
+- Method Reports
 
 ---
 
-# Search Features
+## Supported Metadata Filters
 
-The retrieval engine supports:
-
-- Semantic Search
-- Keyword Search
-- Hybrid Search
-- Metadata Filtering
-
-Supported filter operators:
+The retrieval engine currently supports:
 
 - equals
 - contains
@@ -224,26 +228,37 @@ Supported filter operators:
 - <
 - <=
 
+Example:
+
+```python
+SearchFilter(
+    property="file_path",
+    constraint="contains",
+    value="routing.py",
+)
+```
+
 ---
 
-# Current Capabilities
+## Current Capabilities
 
 - Repository Parsing
 - AST Chunking
 - Embedding Generation
+- BM25 Retrieval
+- Dense Retrieval
 - Hybrid Retrieval
 - Metadata Filtering
 - Repository Statistics
-- Repository Reports
 - MCP Integration
 
 ---
 
-# Future Improvements
+## Future Improvements
 
-Planned enhancements include:
+Planned improvements include:
 
-- Compound metadata filters (AND / OR / NOT)
+- Compound metadata filters (`AND`, `OR`, `NOT`)
 - Retrieval evaluation metrics
 - Incremental indexing
 - Docker deployment
@@ -252,6 +267,6 @@ Planned enhancements include:
 
 ---
 
-# License
+## License
 
-This project is intended for educational and research purposes.
+This project was developed for educational, research, and internship purposes.
