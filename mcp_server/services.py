@@ -12,6 +12,7 @@ All retrieval logic should live here so it can be reused by:
 
 import time
 
+
 from app.core.collections import (
     get_collection,
     COLLECTION_MAP,
@@ -129,10 +130,17 @@ def execute_search(
         request.collection_name,
     )
 
+    print("=" * 80)
+    print("SERVICE FILTER")
+    print(type(request.filter))
+    print(request.filter)
+    print("=" * 80)
+
     results = retriever.search(
         query=request.query,
         collections=collections,
         top_k=request.top_k,
+        filter=request.filter,
     )
 
     execution_time = (

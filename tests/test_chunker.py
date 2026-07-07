@@ -17,20 +17,21 @@ ChunkResult
 from app.parser.repository_parser import RepositoryParser
 from app.chunker.ast_chunker import ASTChunker
 
-from app.core.config import REPOSITORIES_DIR
+from app.core.config import REPOSITORIES_DIR, REPOSITORY_FOLDER, REPOSITORY_NAME
 
 from app.chunker.splitter import ChunkSplitter  
 
 from app.exporter.json_exporter import JSONExporter
 from app.exporter.manifest import ManifestBuilder
 from app.exporter.statistics import StatisticsBuilder
+from app.core.config import REPOSITORY_NAME
 
 from app.core.config import JSON_OUTPUT_DIR
 
 
 def main():
 
-    repo_path = REPOSITORIES_DIR / "fastapi-master"
+    repo_path = REPOSITORIES_DIR / REPOSITORY_FOLDER
 
     print("=" * 60)
     print("Parsing Repository...")
@@ -125,7 +126,7 @@ def main():
     ManifestBuilder().build(
         chunk_result,
         JSON_OUTPUT_DIR,
-        "fastapi-master",
+        REPOSITORY_NAME,
     )
 
     StatisticsBuilder().build(

@@ -5,6 +5,8 @@ Searches one or more ChromaDB collections and returns
 a unified ranked list of SearchResult objects.
 """
 
+from mcp_server.models import SearchFilter
+
 from app.core.config import (
     FILES_COLLECTION,
     CLASSES_COLLECTION,
@@ -40,6 +42,7 @@ class MultiCollectionRetriever:
         self,
         query_embedding: list[float],
         collections: list[str] | None = None,
+        filter: SearchFilter | None = None,
         top_k: int = 5,
     ) -> list[SearchResult]:
         """
@@ -54,13 +57,24 @@ class MultiCollectionRetriever:
             Collections to search.
             If None, searches all configured collections.
 
+        filter : SearchFilter | None
+            Optional metadata filter applied to retrieved
+            documents.
+
         top_k : int
             Number of results to retrieve from each collection.
 
         Returns
         -------
         list[SearchResult]
+            Ranked search results from all collections.
         """
+
+        print("=" * 80)
+        print("MULTI COLLECTION FILTER")
+        print(type(filter))
+        print(filter)
+        print("=" * 80)
 
         if collections is None:
             collections = self.DEFAULT_COLLECTIONS
@@ -74,6 +88,7 @@ class MultiCollectionRetriever:
                 results = self.retriever.search(
                     collection_name=collection,
                     query_embedding=query_embedding,
+                    filter=filter,
                     top_k=top_k,
                 )
 
@@ -99,6 +114,19 @@ class MultiCollectionRetriever:
     ) -> list[SearchResult]:
         """
         Sort results by similarity score.
+
+        Parameters
+        ----------
+        results : list[SearchResult]
+            Results retrieved from all collections.
+
+        top_k : int
+            Maximum number of results to return.
+
+        Returns
+        -------
+        list[SearchResult]
+            Top ranked search results.
         """
 
         results.sort(

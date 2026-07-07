@@ -4,6 +4,7 @@ from pathlib import Path
 
 from git import repo
 
+from app.core.config import REPOSITORY_FOLDER
 from app.core.logger import logger
 
 from app.models.parser_result import ParserResult
@@ -129,7 +130,9 @@ class ASTParser:
         # and the list of Python files.
         repo = python_files[0]
 
-        while repo.name != "fastapi-master":
+        from app.core.config import REPOSITORY_FOLDER
+
+        while repo.name != REPOSITORY_FOLDER:
             repo = repo.parent
 
         self.repository_root = repo

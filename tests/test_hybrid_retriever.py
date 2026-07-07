@@ -1,9 +1,9 @@
 from app.parser.repository_parser import RepositoryParser
 from app.indexing.index_pipeline import IndexPipeline
 from app.retrieval.hybrid.hybrid_retriever import HybridRetriever
-from app.core.config import REPOSITORIES_DIR
+from app.core.config import REPOSITORIES_DIR, REPOSITORY_FOLDER
 
-repository = REPOSITORIES_DIR / "fastapi-master"
+repository = REPOSITORIES_DIR / REPOSITORY_FOLDER
 
 # Build indexes
 parser = RepositoryParser()

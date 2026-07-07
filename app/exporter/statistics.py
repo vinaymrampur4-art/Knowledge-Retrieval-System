@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from app.core.config import REPOSITORY_NAME
 from app.models.chunk_result import ChunkResult
 
 
@@ -20,7 +21,7 @@ class StatisticsBuilder:
 
         stats = {
 
-            "repository": "fastapi-master",
+            "repository": REPOSITORY_NAME,
 
             "total_chunks": len(chunk_result.chunks),
 

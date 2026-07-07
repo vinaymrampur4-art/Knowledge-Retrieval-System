@@ -5,6 +5,7 @@ MCP tools for the Knowledge Retrieval System.
 """
 
 from mcp_server.models import (
+    SearchFilter,
     SearchRequest,
     SearchResponse,
     LookupRequest,
@@ -40,11 +41,90 @@ from mcp_server.services import (
 def search_via_query(
     query: str,
     collection_name: str | None = None,
+    filter: SearchFilter | None = None,
     top_k: int = 5,
     alpha: float = 0.8,
 ) -> SearchResponse:
     """
-    Search the indexed repository using natural language.
+    Search the indexed repository using a natural language query.
+
+    This is the primary retrieval tool of the Knowledge Retrieval System.
+    It performs hybrid retrieval to locate relevant source code, classes,
+    methods, functions, files, and code blocks.
+
+    Retrieval Pipeline
+    ------------------
+    The search pipeline consists of four stages:
+
+    1. Dense Retrieval
+        Uses BAAI/bge-small-en-v1.5 embeddings for semantic search.
+
+    2. BM25 Retrieval
+        Performs keyword-based lexical retrieval.
+
+    3. Reciprocal Rank Fusion (RRF)
+        Combines dense and BM25 results.
+
+    4. CrossEncoder Reranking
+        Produces the final ranking.
+
+    By default all indexed collections are searched.
+    Optionally the search can be restricted to a single collection.
+
+    Parameters
+    ----------
+    query : str
+        Natural language search query.
+
+    collection_name : str | None
+        Optional collection restriction.
+
+    filter : SearchFilter | None
+        Optional metadata filter.
+
+        Supported operators
+
+        • equals
+        • contains
+        • startswith
+        • endswith
+        • !=
+        • >
+        • >=
+        • <
+        • <=
+
+    top_k : int
+        Maximum number of results.
+
+    alpha : float
+        Hybrid retrieval weight.
+
+    Returns
+    -------
+    SearchResponse
+
+    Examples
+    --------
+    Search all collections
+
+        query="router"
+
+    Search methods only
+
+        collection_name="methods"
+
+    Search routing.py
+
+        filter=SearchFilter(
+            property="file_path",
+            constraint="contains",
+            value="routing.py",
+        )
+
+    Explain APIRouter
+
+        query="Explain APIRouter"
     """
 
     request = SearchRequest(
@@ -52,6 +132,7 @@ def search_via_query(
         collection_name=collection_name,
         top_k=top_k,
         alpha=alpha,
+        filter=filter,
     )
 
     return execute_search(request)
@@ -63,16 +144,52 @@ def search_via_query(
 
 def search_methods(
     query: str,
+    filter: SearchFilter | None = None,
     top_k: int = 5,
     alpha: float = 0.8,
 ) -> SearchResponse:
+    """
+    Search the indexed Methods Collection.
+
+    This tool searches indexed Python methods using hybrid retrieval.
+    It is useful for locating method implementations, understanding
+    business logic, and exploring object behavior within the repository.
+
+    Parameters
+    ----------
+    query : str
+        Natural language description of the method to search.
+
+    top_k : int, default=5
+        Maximum number of matching methods to return.
+
+    alpha : float, default=0.8
+        Hybrid search weight controlling the balance between semantic
+        vector search and keyword matching.
+
+    Returns
+    -------
+    SearchResponse
+        Ranked search results from the Methods Collection.
+
+    Examples
+    --------
+    Explain APIRouter.add_api_route
+
+    How is include_router implemented?
+
+    Find dependency injection methods
+
+    Search authentication methods
+    """
 
     return search_via_query(
         query=query,
-        collection_name="Methods_Collection_v1",
+        collection_name="methods",
+        filter=filter,
         top_k=top_k,
         alpha=alpha,
-    )
+)
 
 
 # ==========================================================
@@ -81,13 +198,50 @@ def search_methods(
 
 def search_classes(
     query: str,
+    filter: SearchFilter | None = None,
     top_k: int = 5,
     alpha: float = 0.8,
 ) -> SearchResponse:
+    """
+    Search the indexed Classes Collection.
+
+    This tool searches indexed Python classes using hybrid retrieval.
+    It is useful for locating class definitions, understanding object
+    responsibilities, inheritance relationships, and overall software
+    architecture.
+
+    Parameters
+    ----------
+    query : str
+        Natural language description of the class to search.
+
+    top_k : int, default=5
+        Maximum number of matching classes to return.
+
+    alpha : float, default=0.8
+        Hybrid search weight controlling the balance between semantic
+        vector search and keyword matching.
+
+    Returns
+    -------
+    SearchResponse
+        Ranked search results from the Classes Collection.
+
+    Examples
+    --------
+    Explain APIRouter
+
+    Find request classes
+
+    Search response classes
+
+    Locate authentication classes
+    """
 
     return search_via_query(
         query=query,
-        collection_name="Classes_Collection_v1",
+        collection_name="classes",
+        filter=filter,
         top_k=top_k,
         alpha=alpha,
     )
@@ -99,13 +253,49 @@ def search_classes(
 
 def search_files(
     query: str,
+    filter: SearchFilter | None = None,
     top_k: int = 5,
     alpha: float = 0.8,
 ) -> SearchResponse:
+    """
+    Search the indexed Files Collection.
+
+    This tool searches indexed source files using hybrid retrieval.
+    It is useful for locating files that implement specific features,
+    modules, or components within the repository.
+
+    Parameters
+    ----------
+    query : str
+        Natural language description of the file or feature to search.
+
+    top_k : int, default=5
+        Maximum number of matching files to return.
+
+    alpha : float, default=0.8
+        Hybrid search weight controlling the balance between semantic
+        vector search and keyword matching.
+
+    Returns
+    -------
+    SearchResponse
+        Ranked search results from the Files Collection.
+
+    Examples
+    --------
+    Find the routing module
+
+    Search authentication files
+
+    Locate dependency injection implementation
+
+    Find middleware files
+    """
 
     return search_via_query(
         query=query,
-        collection_name="Files_Collection_v1",
+        collection_name="files",
+        filter=filter,
         top_k=top_k,
         alpha=alpha,
     )
@@ -117,13 +307,49 @@ def search_files(
 
 def search_functions(
     query: str,
+    filter: SearchFilter | None = None,
     top_k: int = 5,
     alpha: float = 0.8,
 ) -> SearchResponse:
+    """
+    Search the indexed Functions Collection.
+
+    This tool searches standalone Python functions using hybrid
+    retrieval. It is useful for locating helper functions, utility
+    functions, decorators, and module-level implementations.
+
+    Parameters
+    ----------
+    query : str
+        Natural language description of the function to search.
+
+    top_k : int, default=5
+        Maximum number of matching functions to return.
+
+    alpha : float, default=0.8
+        Hybrid search weight controlling the balance between semantic
+        vector search and keyword matching.
+
+    Returns
+    -------
+    SearchResponse
+        Ranked search results from the Functions Collection.
+
+    Examples
+    --------
+    Find helper functions
+
+    Search validation functions
+
+    Locate authentication utilities
+
+    Find startup functions
+    """
 
     return search_via_query(
         query=query,
-        collection_name="Functions_Collection_v1",
+        collection_name="functions",
+        filter=filter,
         top_k=top_k,
         alpha=alpha,
     )
@@ -135,13 +361,51 @@ def search_functions(
 
 def search_code(
     query: str,
+    filter: SearchFilter | None = None,
     top_k: int = 5,
     alpha: float = 0.8,
 ) -> SearchResponse:
+    """
+    Search the indexed Code Blocks Collection.
+
+    This tool searches code blocks extracted from the repository using
+    hybrid retrieval. It is useful for locating implementation snippets,
+    algorithms, control flow, and specific code patterns regardless of
+    the enclosing class or function.
+
+    Parameters
+    ----------
+    query : str
+        Natural language description of the code or implementation to
+        search.
+
+    top_k : int, default=5
+        Maximum number of matching code blocks to return.
+
+    alpha : float, default=0.8
+        Hybrid search weight controlling the balance between semantic
+        vector search and keyword matching.
+
+    Returns
+    -------
+    SearchResponse
+        Ranked search results from the Code Blocks Collection.
+
+    Examples
+    --------
+    Find JWT validation logic
+
+    Search SQL query execution
+
+    Locate exception handling code
+
+    Find middleware implementation
+    """
 
     return search_via_query(
         query=query,
-        collection_name="Code_Block_Collection_v1",
+        collection_name="code_blocks",
+        filter=filter,
         top_k=top_k,
         alpha=alpha,
     )
@@ -156,7 +420,32 @@ def lookup_by_id(
     collection_name: str | None = None,
 ) -> LookupResponse:
     """
-    Retrieve a document using its unique ID.
+    Retrieve an indexed document using its unique document ID.
+
+    Unlike hybrid retrieval, this tool performs a direct lookup
+    from the indexed collections.
+
+    Parameters
+    ----------
+    id : str
+        Unique document identifier.
+
+    collection_name : str | None
+        Optional collection restriction.
+
+    Returns
+    -------
+    LookupResponse
+
+    Examples
+    --------
+    Lookup a method
+
+    id="code::master::fastapi/routing.py::APIRouter::add_api_route"
+
+    Lookup a file
+
+    id="file::master::fastapi/routing.py"
     """
 
     request = LookupRequest(
@@ -176,20 +465,43 @@ def get_id_by_attributes(
     collection_name: str | None = None,
 ) -> AttributeLookupResponse:
     """
-    Retrieve document IDs using metadata attributes.
+    Retrieve indexed documents using metadata attributes.
+
+    This tool performs exact metadata lookup rather than semantic
+    retrieval.
+
+    Useful for locating documents by
+
+    • class name
+    • method name
+    • file path
+    • repository branch
+    • language
+
+    Parameters
+    ----------
+    attributes : dict
+        Metadata fields to match.
+
+    collection_name : str | None
+        Optional collection restriction.
+
+    Returns
+    -------
+    AttributeLookupResponse
 
     Examples
     --------
     attributes={
-        "method_name": "add_api_route"
+        "class_name":"APIRouter"
     }
 
     attributes={
-        "class_name": "APIRouter"
+        "method_name":"add_api_route"
     }
 
     attributes={
-        "file_path": "fastapi/routing.py"
+        "file_path":"fastapi/routing.py"
     }
     """
 
@@ -207,14 +519,24 @@ def get_id_by_attributes(
 
 def get_index_statistics() -> IndexStatsResponse:
     """
-    Return statistics about the indexed repository.
+    Return statistics describing the indexed repository.
+
+    The returned information includes
+
+    • repository name
+    • indexed files
+    • indexed classes
+    • indexed methods
+    • indexed functions
+    • indexed code blocks
+    • embedding model
+    • embedding dimension
+    • BM25 status
+    • ChromaDB status
 
     Returns
     -------
     IndexStatsResponse
-        Number of indexed files, classes, methods,
-        functions, code blocks, embedding information,
-        and index status.
     """
 
     return check_index_stats()
@@ -292,7 +614,26 @@ def list_branches() -> BranchListResponse:
 
 def complete_stats() -> CompleteStatsResponse:
     """
-    Return a complete dashboard of the indexed repository.
+    Return a complete dashboard describing the indexed repository.
+
+    The dashboard includes
+
+    • repository information
+    • branch
+    • indexed files
+    • indexed classes
+    • indexed methods
+    • indexed functions
+    • indexed code blocks
+    • embedding model
+    • embedding dimension
+    • BM25 status
+    • ChromaDB status
+    • indexed collections
+
+    Returns
+    -------
+    CompleteStatsResponse
     """
 
     return execute_complete_stats()

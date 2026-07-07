@@ -10,6 +10,9 @@ from app.retrieval.sparse.bm25_engine import BM25Engine
 
 from app.retrieval.base_retriever import BaseRetriever
 
+from app.retrieval.filters.filter_builder import FilterBuilder
+from mcp_server.models import SearchFilter
+
 
 class BM25Retriever(BaseRetriever):
 
@@ -26,6 +29,7 @@ class BM25Retriever(BaseRetriever):
     def search(
         self,
         query: str,
+        filter: SearchFilter | None = None,
         top_k: int = 10,
     ) -> list[SearchResult]:
 
@@ -59,5 +63,16 @@ class BM25Retriever(BaseRetriever):
                 )
 
             )
+
+            print("=" * 80)
+            print("BM25 FILTER")
+            print(type(filter))
+            print(filter)
+            print("=" * 80)
+
+        results = FilterBuilder.filter_results(
+            results,
+            filter,
+        )
 
         return results

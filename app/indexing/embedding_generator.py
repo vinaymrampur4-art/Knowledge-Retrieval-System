@@ -3,13 +3,13 @@ Embeds ChromaDocuments.
 """
 
 from sentence_transformers import SentenceTransformer
-
+from app.core.config import EMBEDDING_MODEL
 
 class DocumentEmbeddingGenerator:
 
     def __init__(
         self,
-        model_name="BAAI/bge-small-en-v1.5",
+        model_name=EMBEDDING_MODEL,
         batch_size=128,
     ):
 

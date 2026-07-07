@@ -4,6 +4,7 @@ run.py
 Entry point for the Knowledge Retrieval System.
 """
 
+from app.core.config import REPOSITORY_FOLDER
 from app.parser.repository_loader import RepositoryLoader
 from app.parser.ast_parser import ASTParser
 from app.writers.output_writer import OutputWriter
@@ -14,7 +15,9 @@ def main():
     Main execution flow.
     """
 
-    repository_name = "fastapi-master"
+    from app.core.config import REPOSITORY_FOLDER
+
+    repository_name = REPOSITORY_FOLDER
 
     # -----------------------------------------
     # Load Repository

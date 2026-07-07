@@ -2,10 +2,10 @@ from app.parser.repository_parser import RepositoryParser
 from app.chunker.ast_chunker import ASTChunker
 from app.embedding.embedding_generator import EmbeddingGenerator
 
-from app.core.config import REPOSITORIES_DIR
+from app.core.config import REPOSITORIES_DIR, REPOSITORY_FOLDER
 
 
-repository = REPOSITORIES_DIR / "fastapi-master"
+repository = REPOSITORIES_DIR / REPOSITORY_FOLDER
 
 # Parse
 parser = RepositoryParser()

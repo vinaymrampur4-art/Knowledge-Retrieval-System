@@ -8,7 +8,54 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+# ==========================================================
+# Search Filter
+# ==========================================================
 
+class SearchFilter(BaseModel):
+    """
+    Metadata filter applied during retrieval.
+
+    This model represents a single metadata constraint that can
+    be applied to restrict search results.
+
+    Examples
+    --------
+    SearchFilter(
+        property="file_path",
+        constraint="contains",
+        value="routing.py",
+    )
+
+    SearchFilter(
+        property="class_name",
+        constraint="equals",
+        value="APIRouter",
+    )
+    """
+
+    property: str = Field(
+        ...,
+        description="Metadata field to filter on.",
+    )
+
+    constraint: str = Field(
+        ...,
+        description=(
+            "Comparison operator used during filtering. "
+            "Supported operators: "
+            "equals, contains, startswith, endswith, "
+            "!=, >, >=, <, <=."
+        ),
+    )
+
+    value: Any = Field(
+        ...,
+        description=(
+            "Value used during comparison. "
+            "Supports strings, integers, floats and booleans."
+        ),
+    )
 # ==========================================================
 # Search Request
 # ==========================================================
@@ -43,6 +90,13 @@ class SearchRequest(BaseModel):
         ge=1,
         le=20,
         description="Maximum number of results.",
+    )
+
+    filter: SearchFilter | None = Field(
+        default=None,
+        description=(
+            "Optional metadata filter applied during retrieval."
+        ),
     )
 
 

@@ -13,8 +13,11 @@ Responsibilities
 5. Convert raw Chroma output into SearchResult objects.
 """
 
+from mcp_server.models import SearchFilter
+
 from app.retrieval.search_result import SearchResult
 from app.vectordb.chroma_client import ChromaClient
+from app.retrieval.filters.filter_builder import FilterBuilder
 
 
 class ChromaRetriever:
@@ -34,11 +37,36 @@ class ChromaRetriever:
         self,
         collection_name: str,
         query_embedding: list[float],
+        filter: SearchFilter | None = None,
         top_k: int = 5,
     ) -> list[SearchResult]:
         """
         Search a Chroma collection using semantic similarity.
+
+        Parameters
+        ----------
+        collection_name : str
+            Chroma collection name.
+
+        query_embedding : list[float]
+            Embedded query vector.
+
+        filter : SearchFilter | None
+            Optional metadata filter.
+
+        top_k : int
+            Number of nearest neighbours to retrieve.
+
+        Returns
+        -------
+        list[SearchResult]
         """
+
+        print("=" * 80)
+        print("CHROMA FILTER")
+        print(type(filter))
+        print(filter)
+        print("=" * 80)
 
         collection = self.client.get_collection(
             name=collection_name,
@@ -54,10 +82,17 @@ class ChromaRetriever:
             ],
         )
 
-        return self._build_results(
+        results = self._build_results(
             collection_name,
             response,
         )
+
+        results = FilterBuilder.filter_results(
+            results,
+            filter,
+        )
+
+        return results
 
     # ---------------------------------------------------------
     # Get By ID
@@ -93,17 +128,11 @@ class ChromaRetriever:
         metadatas = response.get("metadatas", [])
 
         return SearchResult(
-
             id=ids[0],
-
             score=1.0,
-
             content=documents[0],
-
             collection=collection_name,
-
             metadata=metadatas[0] if metadatas else {},
-
         )
 
     # ---------------------------------------------------------
@@ -117,18 +146,6 @@ class ChromaRetriever:
     ) -> list[SearchResult]:
         """
         Retrieve documents matching metadata attributes.
-
-        Parameters
-        ----------
-        collection_name : str
-            Chroma collection name.
-
-        attributes : dict
-            Metadata filters.
-
-        Returns
-        -------
-        list[SearchResult]
         """
 
         collection = self.client.get_collection(
@@ -144,9 +161,7 @@ class ChromaRetriever:
         )
 
         ids = response.get("ids", [])
-
         documents = response.get("documents", [])
-
         metadatas = response.get("metadatas", [])
 
         results: list[SearchResult] = []
@@ -158,21 +173,13 @@ class ChromaRetriever:
         ):
 
             results.append(
-
                 SearchResult(
-
                     id=doc_id,
-
                     score=1.0,
-
                     content=document,
-
                     collection=collection_name,
-
                     metadata=metadata or {},
-
                 )
-
             )
 
         return results
@@ -187,17 +194,14 @@ class ChromaRetriever:
         response: dict,
     ) -> list[SearchResult]:
         """
-        Convert Chroma query response into SearchResult objects.
+        Convert a Chroma query response into SearchResult objects.
         """
 
         search_results: list[SearchResult] = []
 
         ids = response.get("ids", [[]])[0]
-
         documents = response.get("documents", [[]])[0]
-
         metadatas = response.get("metadatas", [[]])[0]
-
         distances = response.get("distances", [[]])[0]
 
         for doc_id, document, metadata, distance in zip(
@@ -210,21 +214,13 @@ class ChromaRetriever:
             score = 1.0 - float(distance)
 
             search_results.append(
-
                 SearchResult(
-
                     id=doc_id,
-
                     score=score,
-
                     content=document,
-
                     collection=collection_name,
-
                     metadata=metadata or {},
-
                 )
-
             )
 
         return search_results

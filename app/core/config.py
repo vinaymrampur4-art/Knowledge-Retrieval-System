@@ -33,14 +33,28 @@ JSON_OUTPUT_DIR = OUTPUT_DIR / "json"
 LOGS_DIR = PROJECT_ROOT / "logs"
 
 # ==========================================================
-# GITHUB REPOSITORY
+# REPOSITORY CONFIGURATION
 # ==========================================================
 
-REPOSITORY_NAME = "fastapi"
+REPOSITORY_NAME = os.getenv(
+    "REPOSITORY_NAME",
+    "fastapi",
+)
 
-GITHUB_REPOSITORY = "https://github.com/fastapi/fastapi"
+REPOSITORY_FOLDER = os.getenv(
+    "REPOSITORY_FOLDER",
+    "fastapi-master",
+)
 
-DEFAULT_BRANCH = "master"
+GITHUB_REPOSITORY = os.getenv(
+    "GITHUB_REPOSITORY",
+    "https://github.com/fastapi/fastapi",
+)
+
+DEFAULT_BRANCH = os.getenv(
+    "DEFAULT_BRANCH",
+    "master",
+)
 
 # ==========================================================
 # PROJECT SETTINGS
@@ -145,7 +159,7 @@ BM25_STORE_FILE = BM25_OUTPUT_DIR / "bm25_store.pkl"
 
 EMBEDDING_MODEL = os.getenv(
     "EMBEDDING_MODEL",
-    "jinaai/jina-embeddings-v2-base-en",
+    "BAAI/bge-small-en-v1.5",
 )
 
 # ==========================================================

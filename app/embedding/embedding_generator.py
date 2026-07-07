@@ -14,6 +14,9 @@ from app.models.chunk_result import ChunkResult
 from app.models.embedding import Embedding
 from app.models.embedding_result import EmbeddingResult
 
+from app.core.config import EMBEDDING_MODEL
+
+
 
 class EmbeddingGenerator:
     """
@@ -22,7 +25,7 @@ class EmbeddingGenerator:
 
     def __init__(
         self,
-        model_name: str = "BAAI/bge-small-en-v1.5",
+        model_name: str = EMBEDDING_MODEL,
         batch_size: int = 128,
     ):
 

@@ -11,7 +11,12 @@ from app.retrieval.sparse.bm25_retriever import BM25Retriever
 from app.core.config import REPOSITORIES_DIR
 
 
-repository = REPOSITORIES_DIR / "fastapi-master"
+from app.core.config import (
+    REPOSITORIES_DIR,
+    REPOSITORY_FOLDER,
+)
+
+repository = REPOSITORIES_DIR / REPOSITORY_FOLDER
 
 parser = RepositoryParser()
 

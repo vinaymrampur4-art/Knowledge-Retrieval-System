@@ -6,6 +6,8 @@ Generates embeddings for user search queries.
 
 from sentence_transformers import SentenceTransformer
 
+from app.core.config import EMBEDDING_MODEL
+
 
 class QueryEmbedder:
     """
@@ -14,7 +16,7 @@ class QueryEmbedder:
 
     def __init__(
         self,
-        model_name: str = "BAAI/bge-small-en-v1.5",
+        model_name: str = EMBEDDING_MODEL,
     ):
 
         print(

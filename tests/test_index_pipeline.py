@@ -6,10 +6,11 @@ from app.indexing.index_pipeline import (
 
 from app.core.config import (
     REPOSITORIES_DIR,
+    REPOSITORY_FOLDER,
 )
 
 repository = (
-    REPOSITORIES_DIR / "fastapi-master"
+    REPOSITORIES_DIR / REPOSITORY_FOLDER
 )
 
 parser = RepositoryParser()
