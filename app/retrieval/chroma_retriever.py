@@ -62,19 +62,18 @@ class ChromaRetriever:
         list[SearchResult]
         """
 
-        print("=" * 80)
-        print("CHROMA FILTER")
-        print(type(filter))
-        print(filter)
-        print("=" * 80)
+        
 
         collection = self.client.get_collection(
             name=collection_name,
         )
 
+        where = FilterBuilder.build(filter)
+
         response = collection.query(
             query_embeddings=[query_embedding],
             n_results=top_k,
+            where=where,
             include=[
                 "documents",
                 "metadatas",
@@ -87,10 +86,19 @@ class ChromaRetriever:
             response,
         )
 
-        results = FilterBuilder.filter_results(
-            results,
-            filter,
-        )
+        if (
+            filter is not None
+            and filter.constraint in [
+                "contains",
+                "startswith",
+                "endswith",
+            ]
+        ):
+
+            results = FilterBuilder.filter_results(
+                results,
+                filter,
+            )
 
         return results
 
