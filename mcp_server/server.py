@@ -4,8 +4,6 @@ server.py
 HTTP MCP Server for the Knowledge Retrieval System.
 """
 
-from fastmcp import FastMCP
-
 from app.core.config import (
     PROJECT_NAME,
     PROJECT_VERSION,
@@ -14,49 +12,10 @@ from app.core.config import (
     MCP_PATH,
 )
 
-from mcp_server.tools import (
-    search_via_query,
-    search_methods,
-    search_classes,
-    search_files,
-    search_functions,
-    search_code,
-    lookup_by_id,
-    get_id_by_attributes,
-)
+from mcp_server.mcp_instance import mcp
 
-# ==========================================================
-# CREATE MCP SERVER
-# ==========================================================
-
-mcp = FastMCP(
-    name=PROJECT_NAME,
-    version=PROJECT_VERSION,
-)
-
-# ==========================================================
-# SEARCH TOOLS
-# ==========================================================
-
-mcp.tool(search_via_query)
-
-mcp.tool(search_methods)
-
-mcp.tool(search_classes)
-
-mcp.tool(search_files)
-
-mcp.tool(search_functions)
-
-mcp.tool(search_code)
-
-# ==========================================================
-# LOOKUP TOOLS
-# ==========================================================
-
-mcp.tool(lookup_by_id)
-
-mcp.tool(get_id_by_attributes)
+# Import tools so that @mcp.tool() decorators execute
+import mcp_server.tools
 
 # ==========================================================
 # MAIN

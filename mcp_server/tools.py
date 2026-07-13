@@ -34,10 +34,13 @@ from mcp_server.services import (
     execute_complete_stats,
 )
 
+from mcp_server.mcp_instance import mcp
+
 # ==========================================================
 # GENERIC SEARCH
 # ==========================================================
 
+@mcp.tool()
 def search_via_query(
     query: str,
     collection_name: str | None = None,
@@ -142,6 +145,7 @@ def search_via_query(
 # METHODS SEARCH
 # ==========================================================
 
+@mcp.tool()
 def search_methods(
     query: str,
     filter: SearchFilter | None = None,
@@ -196,6 +200,7 @@ def search_methods(
 # CLASSES SEARCH
 # ==========================================================
 
+@mcp.tool()
 def search_classes(
     query: str,
     filter: SearchFilter | None = None,
@@ -251,6 +256,7 @@ def search_classes(
 # FILES SEARCH
 # ==========================================================
 
+@mcp.tool()
 def search_files(
     query: str,
     filter: SearchFilter | None = None,
@@ -305,6 +311,7 @@ def search_files(
 # FUNCTIONS SEARCH
 # ==========================================================
 
+@mcp.tool()
 def search_functions(
     query: str,
     filter: SearchFilter | None = None,
@@ -346,7 +353,7 @@ def search_functions(
     Find startup functions
     """
 
-    return search_via_query(
+    return search_via_query(    
         query=query,
         collection_name="functions",
         filter=filter,
@@ -359,6 +366,7 @@ def search_functions(
 # CODE SEARCH
 # ==========================================================
 
+@mcp.tool()
 def search_code(
     query: str,
     filter: SearchFilter | None = None,
@@ -415,6 +423,7 @@ def search_code(
 # LOOKUP BY ID
 # ==========================================================
 
+@mcp.tool()
 def lookup_by_id(
     id: str,
     collection_name: str | None = None,
@@ -460,6 +469,7 @@ def lookup_by_id(
 # LOOKUP BY ATTRIBUTES
 # ==========================================================
 
+@mcp.tool()
 def get_id_by_attributes(
     attributes: dict,
     collection_name: str | None = None,
@@ -517,6 +527,8 @@ def get_id_by_attributes(
 # INDEX STATISTICS
 # ==========================================================
 
+@mcp.tool()
+
 def get_index_statistics() -> IndexStatsResponse:
     """
     Return statistics describing the indexed repository.
@@ -545,6 +557,8 @@ def get_index_statistics() -> IndexStatsResponse:
 # REPOSITORY REPORTS
 # ==========================================================
 
+@mcp.tool()
+
 def list_repositories() -> RepositoryListResponse:
     """
     List all indexed repositories.
@@ -560,6 +574,8 @@ def list_repositories() -> RepositoryListResponse:
 # FILE REPORTS
 # ==========================================================
 
+@mcp.tool()
+
 def list_files() -> FileListResponse:
     """
     List all indexed files.
@@ -574,6 +590,7 @@ def list_files() -> FileListResponse:
 # ==========================================================
 # CLASS REPORTS
 # ==========================================================
+@mcp.tool()
 
 def list_classes() -> ClassListResponse:
     """
@@ -590,6 +607,8 @@ def list_classes() -> ClassListResponse:
 # METHOD REPORTS
 # ==========================================================
 
+@mcp.tool()
+
 def list_methods() -> MethodListResponse:
     """
     List all indexed methods.
@@ -601,6 +620,8 @@ def list_methods() -> MethodListResponse:
 # BRANCH REPORTS
 # ==========================================================
 
+@mcp.tool()
+
 def list_branches() -> BranchListResponse:
     """
     List all indexed branches.
@@ -611,6 +632,8 @@ def list_branches() -> BranchListResponse:
 # ==========================================================
 # COMPLETE REPORT
 # ==========================================================
+
+@mcp.tool()
 
 def complete_stats() -> CompleteStatsResponse:
     """
