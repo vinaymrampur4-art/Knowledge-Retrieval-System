@@ -13,8 +13,14 @@ These helpers provide:
 
 from __future__ import annotations
 
+from app.core.config import (
+    CHUNK_MAX_TOKENS,
+)
+
 import hashlib
 import re
+
+
 
 
 def generate_chunk_id(
@@ -67,7 +73,7 @@ def clean_code(code: str) -> str:
 
 def split_large_chunk(
     code: str,
-    max_tokens: int = 700,
+    max_tokens: int = CHUNK_MAX_TOKENS,
 ) -> list[str]:
     """
     Split overly large chunks into smaller pieces.

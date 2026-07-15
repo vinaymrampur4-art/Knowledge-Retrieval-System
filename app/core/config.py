@@ -75,6 +75,8 @@ DEBUG = os.getenv(
     "False",
 ).lower() == "true"
 
+
+
 # ==========================================================
 # MCP SERVER CONFIGURATION
 # ==========================================================
@@ -160,6 +162,24 @@ BM25_STORE_FILE = BM25_OUTPUT_DIR / "bm25_store.pkl"
 EMBEDDING_MODEL = os.getenv(
     "EMBEDDING_MODEL",
     "BAAI/bge-small-en-v1.5",
+)
+
+# ==========================================================
+# CHUNKING SETTINGS
+# ==========================================================
+
+CHUNK_MAX_TOKENS = int(
+    os.getenv(
+        "CHUNK_MAX_TOKENS",
+        "500",
+    )
+)
+
+CHUNK_MIN_TOKENS = int(
+    os.getenv(
+        "CHUNK_MIN_TOKENS",
+        "80",
+    )
 )
 
 # ==========================================================

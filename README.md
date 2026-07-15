@@ -9,17 +9,21 @@ The system combines AST-based parsing, vector embeddings, BM25 retrieval, rerank
 ## Features
 
 - AST-based repository parsing
-- Automatic code chunking
+- Semantic AST-aware code chunking
+- Configurable chunk splitting
 - Dense semantic retrieval using BGE embeddings
 - BM25 keyword retrieval
 - Hybrid retrieval pipeline
 - Reciprocal Rank Fusion (RRF)
 - CrossEncoder reranking
 - Metadata filtering
+- Native ChromaDB metadata filtering
 - ChromaDB vector storage
 - Repository statistics and reports
 - MCP server integration
-- Configurable embedding and reranking models
+- Configurable embedding models
+- Configurable reranker models
+- Repository exploration tools
 
 ---
 
@@ -32,7 +36,7 @@ Repository Parser
     ↓
 AST Parsing
     ↓
-Chunk Generation
+Document Generation
     ↓
 Embedding Generation
     ↓
@@ -43,6 +47,8 @@ Dense Retrieval + BM25 Retrieval
 Reciprocal Rank Fusion (RRF)
     ↓
 CrossEncoder Reranker
+    ↓
+Metadata Filtering
     ↓
 MCP Server
 ```
@@ -93,6 +99,7 @@ Knowledge-Retrieval-System/
 - FastAPI
 - Tree-Sitter
 - Pydantic
+- HuggingFace Transformers
 
 ---
 
@@ -154,6 +161,8 @@ CHROMA_DB_PATH=chroma_db
 DEFAULT_TOP_K=5
 
 MAX_RESULTS=20
+
+CHUNK_MAX_TOKENS=500
 ```
 
 ---
@@ -208,15 +217,48 @@ The MCP server currently provides:
 
 - Repository Statistics
 - Repository Reports
+- File Reports
 - Branch Reports
 - Class Reports
 - Method Reports
+- Complete Repository Dashboard
 
 ---
 
+## Indexed Collections
+
+The retrieval system maintains multiple collections to improve retrieval quality.
+
+- Files Collection
+- Classes Collection
+- Methods Collection
+- Functions Collection
+- Code Blocks Collection
+
+Hybrid retrieval searches across these collections and merges results using Reciprocal Rank Fusion (RRF).
+
+
+## Chunking
+
+The system includes an AST-aware semantic chunking engine.
+
+Chunk types include:
+
+- Classes
+- Methods
+- Functions
+- Imports
+- Constants
+
+Large semantic chunks are automatically split into embedding-sized chunks using configurable token limits.
+
+Chunk splitting preserves code structure by splitting on line boundaries rather than exact token boundaries.
+
 ## Supported Metadata Filters
 
-The retrieval engine currently supports:
+The retrieval engine supports both native ChromaDB filters and retrieval-level filters.
+
+Supported operators:
 
 - equals
 - contains
@@ -240,14 +282,16 @@ SearchFilter(
 
 ---
 
+
 ## Current Capabilities
 
 - Repository Parsing
 - AST Chunking
-- Embedding Generation
-- BM25 Retrieval
 - Dense Retrieval
+- Sparse Retrieval
 - Hybrid Retrieval
+- RRF Fusion
+- CrossEncoder Reranking
 - Metadata Filtering
 - Repository Statistics
 - MCP Integration

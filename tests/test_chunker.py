@@ -12,26 +12,33 @@ ParserResult
 ASTChunker
     ↓
 ChunkResult
+    ↓
+ChunkSplitter
 """
 
 from app.parser.repository_parser import RepositoryParser
 from app.chunker.ast_chunker import ASTChunker
-
-from app.core.config import REPOSITORIES_DIR, REPOSITORY_FOLDER, REPOSITORY_NAME
-
-from app.chunker.splitter import ChunkSplitter  
+from app.chunker.splitter import ChunkSplitter
 
 from app.exporter.json_exporter import JSONExporter
 from app.exporter.manifest import ManifestBuilder
 from app.exporter.statistics import StatisticsBuilder
-from app.core.config import REPOSITORY_NAME
 
-from app.core.config import JSON_OUTPUT_DIR
+from app.core.config import (
+    REPOSITORIES_DIR,
+    REPOSITORY_FOLDER,
+    REPOSITORY_NAME,
+    JSON_OUTPUT_DIR,
+    CHUNK_MAX_TOKENS,
+)
 
 
 def main():
 
-    repo_path = REPOSITORIES_DIR / REPOSITORY_FOLDER
+    repo_path = (
+        REPOSITORIES_DIR /
+        REPOSITORY_FOLDER
+    )
 
     print("=" * 60)
     print("Parsing Repository...")
@@ -39,7 +46,9 @@ def main():
 
     parser = RepositoryParser()
 
-    parser_result = parser.parse(repo_path)
+    parser_result = parser.parse(
+        repo_path
+    )
 
     print()
 
@@ -49,11 +58,21 @@ def main():
 
     chunker = ASTChunker()
 
-    chunk_result = chunker.build(parser_result)
+    chunk_result = chunker.build(
+        parser_result
+    )
 
-    splitter = ChunkSplitter(max_tokens=500)
+    # --------------------------------------------------------
+    # Split oversized chunks using configured chunk size
+    # --------------------------------------------------------
 
-    chunk_result = splitter.split(chunk_result)
+    splitter = ChunkSplitter(
+        max_tokens=CHUNK_MAX_TOKENS,
+    )
+
+    chunk_result = splitter.split(
+        chunk_result
+    )
 
     chunks = chunk_result.chunks
 
@@ -63,40 +82,80 @@ def main():
     print("STATISTICS")
     print("=" * 60)
 
-    print(f"Total Chunks      : {len(chunks)}")
+    print(
+        f"Chunk Size Limit  : "
+        f"{CHUNK_MAX_TOKENS}"
+    )
+
+    print(
+        f"Total Chunks      : "
+        f"{len(chunks)}"
+    )
 
     class_chunks = sum(
-        1 for c in chunks if c.chunk_type == "class"
+        1
+        for chunk in chunks
+        if chunk.chunk_type == "class"
     )
 
     method_chunks = sum(
-        1 for c in chunks if c.chunk_type == "method"
+        1
+        for chunk in chunks
+        if chunk.chunk_type == "method"
     )
 
     function_chunks = sum(
-        1 for c in chunks if c.chunk_type == "function"
+        1
+        for chunk in chunks
+        if chunk.chunk_type == "function"
     )
 
     import_chunks = sum(
-        1 for c in chunks if c.chunk_type == "import"
+        1
+        for chunk in chunks
+        if chunk.chunk_type == "import"
     )
 
     constant_chunks = sum(
-        1 for c in chunks if c.chunk_type == "constant"
+        1
+        for chunk in chunks
+        if chunk.chunk_type == "constant"
     )
 
-    print(f"Classes           : {class_chunks}")
-    print(f"Methods           : {method_chunks}")
-    print(f"Functions         : {function_chunks}")
-    print(f"Imports           : {import_chunks}")
-    print(f"Constants         : {constant_chunks}")
+    print(
+        f"Classes           : "
+        f"{class_chunks}"
+    )
+
+    print(
+        f"Methods           : "
+        f"{method_chunks}"
+    )
+
+    print(
+        f"Functions         : "
+        f"{function_chunks}"
+    )
+
+    print(
+        f"Imports           : "
+        f"{import_chunks}"
+    )
+
+    print(
+        f"Constants         : "
+        f"{constant_chunks}"
+    )
 
     total_tokens = sum(
         chunk.token_count
         for chunk in chunks
     )
 
-    print(f"Estimated Tokens  : {total_tokens}")
+    print(
+        f"Estimated Tokens  : "
+        f"{total_tokens}"
+    )
 
     print()
 
@@ -108,15 +167,38 @@ def main():
 
         print()
 
-        print(f"ID      : {chunk.chunk_id}")
-        print(f"TYPE    : {chunk.chunk_type}")
-        print(f"TITLE   : {chunk.title}")
-        print(f"TOKENS  : {chunk.token_count}")
-        print(f"PARENT  : {chunk.parent_id}")
+        print(
+            f"ID      : "
+            f"{chunk.chunk_id}"
+        )
+
+        print(
+            f"TYPE    : "
+            f"{chunk.chunk_type}"
+        )
+
+        print(
+            f"TITLE   : "
+            f"{chunk.title}"
+        )
+
+        print(
+            f"TOKENS  : "
+            f"{chunk.token_count}"
+        )
+
+        print(
+            f"PARENT  : "
+            f"{chunk.parent_id}"
+        )
 
         print("-" * 50)
 
-        exporter = JSONExporter()
+    # --------------------------------------------------------
+    # Export Results
+    # --------------------------------------------------------
+
+    exporter = JSONExporter()
 
     exporter.export(
         chunk_result,
@@ -135,12 +217,13 @@ def main():
     )
 
     print()
+
     print("=" * 60)
     print("JSON EXPORT COMPLETED")
     print("=" * 60)
+
     print(JSON_OUTPUT_DIR)
 
 
 if __name__ == "__main__":
     main()
-

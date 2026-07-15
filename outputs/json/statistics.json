@@ -1,13 +1,13 @@
 {
-    "repository": "fastapi-master",
-    "total_chunks": 10941,
-    "classes": 912,
-    "methods": 467,
-    "functions": 4902,
-    "imports": 4599,
-    "constants": 61,
-    "total_tokens": 1008807,
-    "average_tokens_per_chunk": 92.2,
+    "repository": "fastapi",
+    "total_chunks": 1523,
+    "classes": 315,
+    "methods": 353,
+    "functions": 191,
+    "imports": 649,
+    "constants": 15,
+    "total_tokens": 296038,
+    "average_tokens_per_chunk": 194.38,
     "largest_chunk": 587,
     "smallest_chunk": 1
 }

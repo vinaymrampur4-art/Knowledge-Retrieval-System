@@ -16,12 +16,15 @@ from app.chunker.chunk_utils import (
     estimate_tokens,
 )
 
+from app.core.config import (
+    CHUNK_MAX_TOKENS,
+)
 
 class ChunkSplitter:
 
     def __init__(
         self,
-        max_tokens: int = 500,
+        max_tokens: int = CHUNK_MAX_TOKENS,
     ):
         self.max_tokens = max_tokens
 
