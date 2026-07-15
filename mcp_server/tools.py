@@ -156,25 +156,51 @@ def search_methods(
     Search the indexed Methods Collection.
 
     This tool searches indexed Python methods using hybrid retrieval.
-    It is useful for locating method implementations, understanding
-    business logic, and exploring object behavior within the repository.
 
-    Parameters
-    ----------
+    Useful for:
+
+    • understanding business logic
+    • locating implementations
+    • exploring object behaviour
+    • tracing execution flow
+
+    Retrieval Pipeline
+    ------------------
+    1. Dense Retrieval
+    2. BM25 Retrieval
+    3. Reciprocal Rank Fusion (RRF)
+    4. CrossEncoder Reranking
+
+    Args
+    ----
     query : str
-        Natural language description of the method to search.
+        Natural language description of the method.
 
-    top_k : int, default=5
+    filter : SearchFilter | None
+        Optional metadata filter.
+
+        Supported operators:
+
+        • equals
+        • contains
+        • startswith
+        • endswith
+        • !=
+        • >
+        • >=
+        • <
+        • <=
+
+    top_k : int
         Maximum number of matching methods to return.
 
-    alpha : float, default=0.8
-        Hybrid search weight controlling the balance between semantic
-        vector search and keyword matching.
+    alpha : float
+        Hybrid retrieval weight controlling the balance between
+        semantic similarity and keyword matching.
 
     Returns
     -------
     SearchResponse
-        Ranked search results from the Methods Collection.
 
     Examples
     --------
@@ -211,26 +237,31 @@ def search_classes(
     Search the indexed Classes Collection.
 
     This tool searches indexed Python classes using hybrid retrieval.
-    It is useful for locating class definitions, understanding object
-    responsibilities, inheritance relationships, and overall software
-    architecture.
 
-    Parameters
-    ----------
+    Useful for:
+
+    • understanding repository architecture
+    • exploring inheritance relationships
+    • locating abstractions
+    • understanding responsibilities
+
+    Args
+    ----
     query : str
-        Natural language description of the class to search.
+        Natural language description of the class.
 
-    top_k : int, default=5
-        Maximum number of matching classes to return.
+    filter : SearchFilter | None
+        Optional metadata filter.
 
-    alpha : float, default=0.8
-        Hybrid search weight controlling the balance between semantic
-        vector search and keyword matching.
+    top_k : int
+        Maximum number of matching classes returned.
+
+    alpha : float
+        Hybrid retrieval weight.
 
     Returns
     -------
     SearchResponse
-        Ranked search results from the Classes Collection.
 
     Examples
     --------
@@ -266,26 +297,32 @@ def search_files(
     """
     Search the indexed Files Collection.
 
-    This tool searches indexed source files using hybrid retrieval.
-    It is useful for locating files that implement specific features,
-    modules, or components within the repository.
+    This tool searches indexed repository files using hybrid retrieval.
 
-    Parameters
-    ----------
+    Useful for:
+
+    • locating implementation files
+    • discovering modules
+    • exploring repository structure
+    • understanding feature ownership
+
+    Args
+    ----
     query : str
-        Natural language description of the file or feature to search.
+        Natural language description of the file or feature.
 
-    top_k : int, default=5
-        Maximum number of matching files to return.
+    filter : SearchFilter | None
+        Optional metadata filter.
 
-    alpha : float, default=0.8
-        Hybrid search weight controlling the balance between semantic
-        vector search and keyword matching.
+    top_k : int
+        Maximum number of matching files returned.
+
+    alpha : float
+        Hybrid retrieval weight.
 
     Returns
     -------
     SearchResponse
-        Ranked search results from the Files Collection.
 
     Examples
     --------
@@ -296,7 +333,7 @@ def search_files(
     Locate dependency injection implementation
 
     Find middleware files
-    """
+    """ 
 
     return search_via_query(
         query=query,
@@ -321,26 +358,32 @@ def search_functions(
     """
     Search the indexed Functions Collection.
 
-    This tool searches standalone Python functions using hybrid
-    retrieval. It is useful for locating helper functions, utility
-    functions, decorators, and module-level implementations.
+    This tool searches standalone Python functions using hybrid retrieval.
 
-    Parameters
-    ----------
+    Useful for:
+
+    • locating helper functions
+    • discovering utility functions
+    • finding decorators
+    • understanding module behaviour
+
+    Args
+    ----
     query : str
-        Natural language description of the function to search.
+        Natural language description of the function.
 
-    top_k : int, default=5
-        Maximum number of matching functions to return.
+    filter : SearchFilter | None
+        Optional metadata filter.
 
-    alpha : float, default=0.8
-        Hybrid search weight controlling the balance between semantic
-        vector search and keyword matching.
+    top_k : int
+        Maximum number of matching functions returned.
+
+    alpha : float
+        Hybrid retrieval weight.
 
     Returns
     -------
     SearchResponse
-        Ranked search results from the Functions Collection.
 
     Examples
     --------
@@ -376,28 +419,32 @@ def search_code(
     """
     Search the indexed Code Blocks Collection.
 
-    This tool searches code blocks extracted from the repository using
-    hybrid retrieval. It is useful for locating implementation snippets,
-    algorithms, control flow, and specific code patterns regardless of
-    the enclosing class or function.
+    This tool searches implementation-level code blocks using hybrid retrieval.
 
-    Parameters
-    ----------
+    Useful for:
+
+    • locating algorithms
+    • finding implementation snippets
+    • discovering control flow
+    • understanding low-level logic
+
+    Args
+    ----
     query : str
-        Natural language description of the code or implementation to
-        search.
+        Natural language description of the code implementation.
 
-    top_k : int, default=5
-        Maximum number of matching code blocks to return.
+    filter : SearchFilter | None
+        Optional metadata filter.
 
-    alpha : float, default=0.8
-        Hybrid search weight controlling the balance between semantic
-        vector search and keyword matching.
+    top_k : int
+        Maximum number of matching code blocks returned.
+
+    alpha : float
+        Hybrid retrieval weight.
 
     Returns
     -------
     SearchResponse
-        Ranked search results from the Code Blocks Collection.
 
     Examples
     --------
@@ -432,10 +479,16 @@ def lookup_by_id(
     Retrieve an indexed document using its unique document ID.
 
     Unlike hybrid retrieval, this tool performs a direct lookup
-    from the indexed collections.
+    against indexed collections.
 
-    Parameters
-    ----------
+    Useful for:
+
+    • opening retrieved documents
+    • inspecting metadata
+    • debugging retrieval results
+
+    Args
+    ----
     id : str
         Unique document identifier.
 
@@ -448,11 +501,7 @@ def lookup_by_id(
 
     Examples
     --------
-    Lookup a method
-
     id="code::master::fastapi/routing.py::APIRouter::add_api_route"
-
-    Lookup a file
 
     id="file::master::fastapi/routing.py"
     """
@@ -480,21 +529,39 @@ def get_id_by_attributes(
     This tool performs exact metadata lookup rather than semantic
     retrieval.
 
-    Useful for locating documents by
+    Unlike hybrid search, this operation does not use embeddings,
+    BM25 retrieval, or reranking. Results are returned only when
+    the supplied metadata matches exactly.
+
+    Useful for locating documents by:
 
     • class name
     • method name
+    • function name
     • file path
     • repository branch
     • language
+    • module name
 
-    Parameters
-    ----------
+    Args
+    ----
     attributes : dict
         Metadata fields to match.
 
+        Supported examples include:
+
+        • class_name
+        • method_name
+        • function_name
+        • file_path
+        • branch
+        • language
+        • module_name
+
     collection_name : str | None
         Optional collection restriction.
+
+        When omitted, all indexed collections are searched.
 
     Returns
     -------
@@ -502,16 +569,34 @@ def get_id_by_attributes(
 
     Examples
     --------
-    attributes={
-        "class_name":"APIRouter"
-    }
+    Find APIRouter
 
     attributes={
-        "method_name":"add_api_route"
+        "class_name": "APIRouter"
     }
 
+    Find add_api_route()
+
     attributes={
-        "file_path":"fastapi/routing.py"
+        "method_name": "add_api_route"
+    }
+
+    Find routing.py
+
+    attributes={
+        "file_path": "fastapi/routing.py"
+    }
+
+    Find Python files
+
+    attributes={
+        "language": "python"
+    }
+
+    Find documents from the master branch
+
+    attributes={
+        "branch": "master"
     }
     """
 
@@ -561,7 +646,13 @@ def get_index_statistics() -> IndexStatsResponse:
 
 def list_repositories() -> RepositoryListResponse:
     """
-    List all indexed repositories.
+    Return all repositories currently indexed by the system.
+
+    Useful for:
+
+    • repository discovery
+    • multi-repository environments
+    • debugging indexing pipelines
 
     Returns
     -------
@@ -578,7 +669,13 @@ def list_repositories() -> RepositoryListResponse:
 
 def list_files() -> FileListResponse:
     """
-    List all indexed files.
+    Return metadata for all indexed repository files.
+
+    Useful for:
+
+    • repository exploration
+    • debugging indexing issues
+    • understanding project structure
 
     Returns
     -------
@@ -594,7 +691,13 @@ def list_files() -> FileListResponse:
 
 def list_classes() -> ClassListResponse:
     """
-    List all indexed classes.
+    Return metadata for all indexed classes.
+
+    Useful for:
+
+    • architecture exploration
+    • inheritance analysis
+    • understanding object relationships
 
     Returns
     -------
@@ -611,7 +714,17 @@ def list_classes() -> ClassListResponse:
 
 def list_methods() -> MethodListResponse:
     """
-    List all indexed methods.
+    Return metadata for all indexed methods.
+
+    Useful for:
+
+    • API discovery
+    • repository exploration
+    • method analysis
+
+    Returns
+    -------
+    MethodListResponse
     """
 
     return execute_list_methods()
@@ -624,7 +737,17 @@ def list_methods() -> MethodListResponse:
 
 def list_branches() -> BranchListResponse:
     """
-    List all indexed branches.
+    Return all indexed repository branches.
+
+    Useful for:
+
+    • multi-branch repositories
+    • debugging indexing operations
+    • branch comparison
+
+    Returns
+    -------
+    BranchListResponse
     """
 
     return execute_list_branches()
