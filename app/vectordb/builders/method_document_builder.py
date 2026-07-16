@@ -22,17 +22,23 @@ class MethodDocumentBuilder:
         # --------------------------------------------------
 
         if parsed_method.parameters:
+
             parameter_lines = []
 
             for parameter in parsed_method.parameters:
 
-                datatype = parameter.get("datatype") or "Any"
+                datatype = (
+                    parameter.get("datatype")
+                    or "Any"
+                )
 
                 parameter_lines.append(
                     f"{parameter['name']} : {datatype}"
                 )
 
-            parameters_document = "\n".join(parameter_lines)
+            parameters_document = "\n".join(
+                parameter_lines
+            )
 
             parameter_string = ", ".join(
                 f"{p['name']}:{p.get('datatype') or 'Any'}"
@@ -73,6 +79,10 @@ class MethodDocumentBuilder:
             [
                 "DOCUMENT TYPE\nPython Method",
 
+                f"REPOSITORY\n{parsed_method.repository_name}",
+
+                f"BRANCH\n{parsed_method.branch}",
+
                 f"METHOD NAME\n{parsed_method.method_name}",
 
                 f"CLASS\n{parsed_method.class_name}",
@@ -102,9 +112,10 @@ class MethodDocumentBuilder:
                 (
                     "SUMMARY\n"
                     f"The method '{parsed_method.method_name}' "
-                    f"belongs to class '{parsed_method.class_name}'. "
-                    f"It accepts {len(parsed_method.parameters)} parameter(s) "
-                    f"and returns '{return_type}'."
+                    f"belongs to class '{parsed_method.class_name}' "
+                    f"in repository '{parsed_method.repository_name}'. "
+                    f"It accepts {len(parsed_method.parameters)} "
+                    f"parameter(s) and returns '{return_type}'."
                 ),
 
                 "SOURCE CODE\n"
@@ -120,6 +131,15 @@ class MethodDocumentBuilder:
 
             "document_type":
                 "method",
+
+            "repository_name":
+                parsed_method.repository_name,
+
+            "branch":
+                parsed_method.branch,
+
+            "github_repository":
+                parsed_method.github_repository,
 
             "method_name":
                 parsed_method.method_name,
@@ -163,9 +183,6 @@ class MethodDocumentBuilder:
             "docstring":
                 parsed_method.docstring,
 
-            "branch":
-                "master",
-
             "language":
                 "python",
         }
@@ -175,7 +192,8 @@ class MethodDocumentBuilder:
         # --------------------------------------------------
 
         document_id = (
-            f"master::"
+            f"{parsed_method.repository_name}::"
+            f"{parsed_method.branch}::"
             f"{parsed_method.repo_path}::"
             f"{parsed_method.class_name}::"
             f"{parsed_method.method_name}::"

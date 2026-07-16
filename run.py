@@ -15,9 +15,13 @@ def main():
     Main execution flow.
     """
 
-    from app.core.config import REPOSITORY_FOLDER
+    import sys
 
-    repository_name = REPOSITORY_FOLDER
+    repository_name = (
+        sys.argv[1]
+        if len(sys.argv) > 1
+        else "fastapi-master"
+    )
 
     # -----------------------------------------
     # Load Repository
@@ -33,7 +37,7 @@ def main():
 
     parser = ASTParser()
 
-    result = parser.parse(python_files)
+    result = parser.parse(python_files,loader.repository_path,)
 
     # -----------------------------------------
     # Write Outputs

@@ -37,7 +37,12 @@ from app.retrieval.sparse.bm25_serializer import (
 
 class IndexPipeline:
 
-    def __init__(self):
+    def __init__(
+        self,
+        repository_name: str,
+    ):
+
+        self.repository_name = repository_name
 
         self.embedder = (
             DocumentEmbeddingGenerator()
@@ -47,13 +52,14 @@ class IndexPipeline:
             ChromaIndexer()
         )
 
-        # Always build a NEW BM25 index.
         self.bm25_builder = (
             BM25IndexBuilder()
         )
 
         self.serializer = (
-            BM25Serializer()
+            BM25Serializer(
+                repository_name
+            )
         )
 
     # ---------------------------------------------------------

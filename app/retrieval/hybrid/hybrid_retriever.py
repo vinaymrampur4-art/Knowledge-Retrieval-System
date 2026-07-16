@@ -16,11 +16,18 @@ from app.retrieval.search_result import SearchResult
 
 class HybridRetriever:
 
-    def __init__(self):
+    def __init__(
+        self,
+        repository_name: str,
+    ):
+
+        self.repository_name = repository_name
 
         self.dense = DenseRetriever()
 
-        self.bm25 = BM25Retriever()
+        self.bm25 = BM25Retriever(
+            repository_name
+        )
 
         self.rrf = RRFRanker()
 
@@ -44,15 +51,28 @@ class HybridRetriever:
 
         print("=" * 80)
 
-        for i, result in enumerate(results, start=1):
+        for i, result in enumerate(
+            results,
+            start=1,
+        ):
 
-            metadata = result.metadata or {}
+            metadata = (
+                result.metadata or {}
+            )
 
             name = (
-                metadata.get("method_name")
-                or metadata.get("function_name")
-                or metadata.get("class_name")
-                or metadata.get("module_name")
+                metadata.get(
+                    "method_name"
+                )
+                or metadata.get(
+                    "function_name"
+                )
+                or metadata.get(
+                    "class_name"
+                )
+                or metadata.get(
+                    "module_name"
+                )
                 or result.id
             )
 
@@ -75,21 +95,22 @@ class HybridRetriever:
         debug: bool = False,
     ) -> list[SearchResult]:
 
-        print("=" * 80)
-        print("HYBRID FILTER")
-        print(type(filter))
-        print(filter)
-        print("=" * 80)
+        candidate_k = max(
+            20,
+            top_k * 4,
+        )
 
-        candidate_k = max(20, top_k * 4)
+        # -----------------------------------------------------
+        # Dense Retrieval
+        # -----------------------------------------------------
 
-        # ---------------- Dense ----------------
-
-        dense_results = self.dense.search(
-            query=query,
-            collections=collections,
-            filter=filter,
-            top_k=candidate_k,
+        dense_results = (
+            self.dense.search(
+                query=query,
+                collections=collections,
+                filter=filter,
+                top_k=candidate_k,
+            )
         )
 
         if debug:
@@ -99,12 +120,16 @@ class HybridRetriever:
                 dense_results,
             )
 
-        # ---------------- BM25 -----------------
+        # -----------------------------------------------------
+        # BM25 Retrieval
+        # -----------------------------------------------------
 
-        bm25_results = self.bm25.search(
-            query=query,
-            filter=filter,
-            top_k=candidate_k,
+        bm25_results = (
+            self.bm25.search(
+                query=query,
+                filter=filter,
+                top_k=candidate_k,
+            )
         )
 
         if debug:
@@ -114,14 +139,18 @@ class HybridRetriever:
                 bm25_results,
             )
 
-        # ---------------- RRF ------------------
+        # -----------------------------------------------------
+        # RRF Fusion
+        # -----------------------------------------------------
 
-        hybrid_results = self.rrf.rank(
-            [
-                dense_results,
-                bm25_results,
-            ],
-            top_k=candidate_k,
+        hybrid_results = (
+            self.rrf.rank(
+                [
+                    dense_results,
+                    bm25_results,
+                ],
+                top_k=candidate_k,
+            )
         )
 
         if debug:
@@ -131,19 +160,23 @@ class HybridRetriever:
                 hybrid_results,
             )
 
-        # ---------------- Reranker ----------------
+        # -----------------------------------------------------
+        # Cross Encoder Reranking
+        # -----------------------------------------------------
 
-        reranked = self.reranker.rerank(
-            query=query,
-            results=hybrid_results,
-            top_k=top_k,
+        reranked_results = (
+            self.reranker.rerank(
+                query=query,
+                results=hybrid_results,
+                top_k=top_k,
+            )
         )
 
         if debug:
 
             self._print_results(
                 "RERANKED RESULTS",
-                reranked,
+                reranked_results,
             )
 
-        return reranked
+        return reranked_results

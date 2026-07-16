@@ -75,8 +75,6 @@ DEBUG = os.getenv(
     "False",
 ).lower() == "true"
 
-
-
 # ==========================================================
 # MCP SERVER CONFIGURATION
 # ==========================================================
@@ -136,10 +134,6 @@ FUNCTIONS_COLLECTION = os.getenv(
     "Functions_Collection_v1",
 )
 
-# ==========================================================
-# CODE BLOCK COLLECTION
-# ==========================================================
-
 CODE_BLOCK_COLLECTION = os.getenv(
     "CODE_BLOCK_COLLECTION",
     "Code_Block_Collection_v1",
@@ -151,6 +145,7 @@ CODE_BLOCK_COLLECTION = os.getenv(
 
 BM25_OUTPUT_DIR = OUTPUT_DIR / "bm25"
 
+# Legacy paths (still kept for compatibility)
 BM25_INDEX_FILE = BM25_OUTPUT_DIR / "bm25_index.pkl"
 
 BM25_STORE_FILE = BM25_OUTPUT_DIR / "bm25_store.pkl"
@@ -246,4 +241,3 @@ for directory in [
         parents=True,
         exist_ok=True,
     )
-

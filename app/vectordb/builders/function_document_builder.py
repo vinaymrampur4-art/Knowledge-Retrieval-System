@@ -27,13 +27,18 @@ class FunctionDocumentBuilder:
 
             for parameter in parsed_function.parameters:
 
-                datatype = parameter.get("datatype") or "Any"
+                datatype = (
+                    parameter.get("datatype")
+                    or "Any"
+                )
 
                 parameter_lines.append(
                     f"{parameter['name']} : {datatype}"
                 )
 
-            parameters_document = "\n".join(parameter_lines)
+            parameters_document = "\n".join(
+                parameter_lines
+            )
 
             parameter_string = ", ".join(
                 f"{p['name']}:{p.get('datatype') or 'Any'}"
@@ -74,6 +79,10 @@ class FunctionDocumentBuilder:
             [
                 "DOCUMENT TYPE\nPython Function",
 
+                f"REPOSITORY\n{parsed_function.repository_name}",
+
+                f"BRANCH\n{parsed_function.branch}",
+
                 f"FUNCTION NAME\n{parsed_function.function_name}",
 
                 f"FILE PATH\n{parsed_function.repo_path}",
@@ -99,7 +108,10 @@ class FunctionDocumentBuilder:
                 (
                     "SUMMARY\n"
                     f"The function '{parsed_function.function_name}' "
-                    f"accepts {len(parsed_function.parameters)} parameter(s) "
+                    f"belongs to repository "
+                    f"'{parsed_function.repository_name}'. "
+                    f"It accepts "
+                    f"{len(parsed_function.parameters)} parameter(s) "
                     f"and returns '{return_type}'."
                 ),
 
@@ -113,11 +125,14 @@ class FunctionDocumentBuilder:
         # --------------------------------------------------
 
         file_id = (
-            f"master::{parsed_function.repo_path}"
+            f"{parsed_function.repository_name}::"
+            f"{parsed_function.branch}::"
+            f"{parsed_function.repo_path}"
         )
 
         document_id = (
-            f"master::"
+            f"{parsed_function.repository_name}::"
+            f"{parsed_function.branch}::"
             f"{parsed_function.repo_path}::"
             f"{parsed_function.function_name}::"
             f"{parsed_function.start_line}"
@@ -131,6 +146,15 @@ class FunctionDocumentBuilder:
 
             "document_type":
                 "function",
+
+            "repository_name":
+                parsed_function.repository_name,
+
+            "branch":
+                parsed_function.branch,
+
+            "github_repository":
+                parsed_function.github_repository,
 
             "function_name":
                 parsed_function.function_name,
@@ -167,9 +191,6 @@ class FunctionDocumentBuilder:
 
             "docstring":
                 parsed_function.docstring,
-
-            "branch":
-                "master",
 
             "language":
                 "python",

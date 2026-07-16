@@ -16,9 +16,14 @@ from mcp_server.models import SearchFilter
 
 class BM25Retriever(BaseRetriever):
 
-    def __init__(self):
+    def __init__(
+        self,
+        repository_name: str,
+    ):
 
-        builder = BM25Engine.get_builder()
+        builder = BM25Engine.get_builder(
+            repository_name
+        )
 
         self.index = builder.index
 

@@ -15,11 +15,31 @@ from app.core.config import (
 
 class BM25Serializer:
 
-    def __init__(self):
+    def __init__(
+        self,
+        repository_name: str,
+    ):
 
-        BM25_OUTPUT_DIR.mkdir(
+        self.repository_name = repository_name
+
+        self.repository_dir = (
+            BM25_OUTPUT_DIR /
+            repository_name
+        )
+
+        self.repository_dir.mkdir(
             parents=True,
             exist_ok=True,
+        )
+
+        self.index_file = (
+            self.repository_dir /
+            "bm25_index.pkl"
+        )
+
+        self.store_file = (
+            self.repository_dir /
+            "bm25_store.pkl"
         )
 
     # ---------------------------------------------------------
@@ -30,7 +50,7 @@ class BM25Serializer:
     ):
 
         with open(
-            BM25_INDEX_FILE,
+            self.index_file,
             "wb",
         ) as file:
 
@@ -40,7 +60,7 @@ class BM25Serializer:
             )
 
         with open(
-            BM25_STORE_FILE,
+            self.store_file,
             "wb",
         ) as file:
 
@@ -57,7 +77,7 @@ class BM25Serializer:
     ):
 
         with open(
-            BM25_INDEX_FILE,
+            self.index_file,
             "rb",
         ) as file:
 
@@ -66,7 +86,7 @@ class BM25Serializer:
             )
 
         with open(
-            BM25_STORE_FILE,
+            self.store_file,
             "rb",
         ) as file:
 
@@ -82,10 +102,10 @@ class BM25Serializer:
 
         return (
 
-            BM25_INDEX_FILE.exists()
+            self.index_file.exists()
 
             and
 
-            BM25_STORE_FILE.exists()
+            self.store_file.exists()
 
         )

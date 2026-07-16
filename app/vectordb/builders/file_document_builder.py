@@ -49,11 +49,16 @@ class FileDocumentBuilder:
             [
                 "DOCUMENT TYPE\nPython File",
 
+                f"REPOSITORY\n{parsed_file.repository_name}",
+
+                f"BRANCH\n{parsed_file.branch}",
+
                 f"MODULE\n{parsed_file.module_name}",
 
                 f"FILE PATH\n{parsed_file.repo_path}",
 
-                f"PURPOSE\n{parsed_file.docstring or 'No module documentation available.'}",
+                f"PURPOSE\n"
+                f"{parsed_file.docstring or 'No module documentation available.'}",
 
                 "IMPORTS\n" + (
                     "\n".join(import_names)
@@ -77,7 +82,8 @@ class FileDocumentBuilder:
 
                 (
                     "SUMMARY\n"
-                    f"This Python module contains "
+                    f"This Python module belongs to repository "
+                    f"'{parsed_file.repository_name}' and contains "
                     f"{len(class_names)} classes, "
                     f"{len(function_names)} functions, "
                     f"{len(import_names)} imports, and "
@@ -94,6 +100,15 @@ class FileDocumentBuilder:
 
             "document_type":
                 "file",
+
+            "repository_name":
+                parsed_file.repository_name,
+
+            "branch":
+                parsed_file.branch,
+
+            "github_repository":
+                parsed_file.github_repository,
 
             "module_name":
                 parsed_file.module_name,
@@ -119,9 +134,6 @@ class FileDocumentBuilder:
             "docstring":
                 parsed_file.docstring,
 
-            "branch":
-                "master",
-
             "language":
                 "python",
         }
@@ -131,7 +143,12 @@ class FileDocumentBuilder:
         # --------------------------------------------------
 
         document_id = (
-            f"master::{parsed_file.repo_path}"
+
+            f"{parsed_file.repository_name}::"
+
+            f"{parsed_file.branch}::"
+
+            f"{parsed_file.repo_path}"
         )
 
         return ChromaDocument(

@@ -9,11 +9,17 @@ repository = REPOSITORIES_DIR / REPOSITORY_FOLDER
 parser = RepositoryParser()
 parser_result = parser.parse(repository)
 
-pipeline = IndexPipeline()
+repository_name = parser_result.files[0].repository_name
+
+pipeline = IndexPipeline(
+    repository_name
+)
+
 pipeline.run(parser_result)
 
-# Hybrid retrieval
-retriever = HybridRetriever()
+retriever = HybridRetriever(
+    repository_name
+)
 
 results = retriever.search(
     query="Where is APIRouter implemented?",

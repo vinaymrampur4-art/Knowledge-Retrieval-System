@@ -19,6 +19,10 @@ result = parser.parse(
     repository
 )
 
-pipeline = IndexPipeline()
+repository_name = result.files[0].repository_name
+
+pipeline = IndexPipeline(
+    repository_name
+)
 
 pipeline.run(result)

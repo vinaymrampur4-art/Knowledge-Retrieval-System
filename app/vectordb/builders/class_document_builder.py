@@ -26,7 +26,9 @@ class ClassDocumentBuilder:
             for method in parsed_class.methods
         ]
 
-        base_classes = parsed_class.inherits or []
+        base_classes = (
+            parsed_class.inherits or []
+        )
 
         # --------------------------------------------------
         # Human Readable Document
@@ -35,6 +37,10 @@ class ClassDocumentBuilder:
         document = "\n\n".join(
             [
                 "DOCUMENT TYPE\nPython Class",
+
+                f"REPOSITORY\n{parsed_class.repository_name}",
+
+                f"BRANCH\n{parsed_class.branch}",
 
                 f"CLASS NAME\n{parsed_class.class_name}",
 
@@ -56,8 +62,12 @@ class ClassDocumentBuilder:
                 (
                     "SUMMARY\n"
                     f"The class '{parsed_class.class_name}' "
-                    f"inherits from {len(base_classes)} base class(es) "
-                    f"and contains {len(method_names)} method(s)."
+                    f"belongs to repository "
+                    f"'{parsed_class.repository_name}', "
+                    f"inherits from "
+                    f"{len(base_classes)} base class(es) "
+                    f"and contains "
+                    f"{len(method_names)} method(s)."
                 ),
 
                 "SOURCE CODE\n"
@@ -73,6 +83,15 @@ class ClassDocumentBuilder:
 
             "document_type":
                 "class",
+
+            "repository_name":
+                parsed_class.repository_name,
+
+            "branch":
+                parsed_class.branch,
+
+            "github_repository":
+                parsed_class.github_repository,
 
             "class_name":
                 parsed_class.class_name,
@@ -101,9 +120,6 @@ class ClassDocumentBuilder:
             "docstring":
                 parsed_class.class_docstring,
 
-            "branch":
-                "master",
-
             "language":
                 "python",
         }
@@ -113,7 +129,8 @@ class ClassDocumentBuilder:
         # --------------------------------------------------
 
         document_id = (
-            f"master::"
+            f"{parsed_class.repository_name}::"
+            f"{parsed_class.branch}::"
             f"{parsed_class.repo_path}::"
             f"{parsed_class.class_name}"
         )

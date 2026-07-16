@@ -33,23 +33,31 @@ class CodeBlockDocumentBuilder:
 
             class_name = parsed_object.class_name
 
-            source_code = parsed_object.method_code or ""
+            source_code = (
+                parsed_object.method_code or ""
+            )
 
         else:
 
             block_type = "function"
 
-            block_name = parsed_object.function_name
+            block_name = (
+                parsed_object.function_name
+            )
 
             class_name = ""
 
-            source_code = parsed_object.function_code or ""
+            source_code = (
+                parsed_object.function_code or ""
+            )
 
         # --------------------------------------------------
         # Search Document
         # --------------------------------------------------
 
         header = [
+            f"Repository: {parsed_object.repository_name}",
+            f"Branch: {parsed_object.branch}",
             f"Type: {block_type}",
             f"Name: {block_name}",
             f"Class: {class_name or 'None'}",
@@ -57,7 +65,10 @@ class CodeBlockDocumentBuilder:
             "",
         ]
 
-        document = "\n".join(header) + source_code
+        document = (
+            "\n".join(header)
+            + source_code
+        )
 
         # --------------------------------------------------
         # Metadata
@@ -65,26 +76,41 @@ class CodeBlockDocumentBuilder:
 
         metadata = {
 
-            "document_type": "code_block",
+            "document_type":
+                "code_block",
 
-            "block_type": block_type,
+            "repository_name":
+                parsed_object.repository_name,
 
-            "block_name": block_name,
+            "branch":
+                parsed_object.branch,
 
-            "class_name": class_name,
+            "github_repository":
+                parsed_object.github_repository,
 
-            "file_path": parsed_object.repo_path,
+            "block_type":
+                block_type,
 
-            "github_repo_path": parsed_object.github_url,
+            "block_name":
+                block_name,
 
-            "start_line": parsed_object.start_line,
+            "class_name":
+                class_name,
 
-            "end_line": parsed_object.end_line,
+            "file_path":
+                parsed_object.repo_path,
 
-            "language": "python",
+            "github_repo_path":
+                parsed_object.github_url,
 
-            "branch": "master",
+            "start_line":
+                parsed_object.start_line,
 
+            "end_line":
+                parsed_object.end_line,
+
+            "language":
+                "python",
         }
 
         # --------------------------------------------------
@@ -95,7 +121,11 @@ class CodeBlockDocumentBuilder:
 
             document_id = (
 
-                f"code::master::"
+                f"code::"
+
+                f"{parsed_object.repository_name}::"
+
+                f"{parsed_object.branch}::"
 
                 f"{parsed_object.repo_path}::"
 
@@ -104,21 +134,23 @@ class CodeBlockDocumentBuilder:
                 f"{parsed_object.method_name}::"
 
                 f"{parsed_object.start_line}"
-
             )
 
         else:
 
             document_id = (
 
-                f"code::master::"
+                f"code::"
+
+                f"{parsed_object.repository_name}::"
+
+                f"{parsed_object.branch}::"
 
                 f"{parsed_object.repo_path}::"
 
                 f"{parsed_object.function_name}::"
 
                 f"{parsed_object.start_line}"
-
             )
 
         # --------------------------------------------------
@@ -136,5 +168,4 @@ class CodeBlockDocumentBuilder:
             embedding=embedding,
 
             metadata=metadata,
-
         )

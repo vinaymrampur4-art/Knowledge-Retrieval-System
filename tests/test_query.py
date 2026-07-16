@@ -8,7 +8,13 @@ This script assumes that the indexes have already been built using:
 It only loads the existing indexes and performs retrieval.
 """
 
-from app.retrieval.hybrid.hybrid_retriever import HybridRetriever
+from app.retrieval.hybrid.hybrid_retriever import (
+    HybridRetriever,
+)
+
+from app.core.config import (
+    REPOSITORY_FOLDER,
+)
 
 
 def main():
@@ -19,13 +25,19 @@ def main():
 
     print("\nLoading indexes...")
 
-    retriever = HybridRetriever()
+    repository_name = REPOSITORY_FOLDER
+
+    retriever = HybridRetriever(
+        repository_name
+    )
 
     print("Indexes Ready.")
 
     while True:
 
-        query = input("\nAsk a question (or 'exit'): ").strip()
+        query = input(
+            "\nAsk a question (or 'exit'): "
+        ).strip()
 
         if query.lower() == "exit":
             break
@@ -49,37 +61,87 @@ def main():
             print("\nNo results found.")
             continue
 
-        for i, result in enumerate(results, start=1):
+        for i, result in enumerate(
+            results,
+            start=1,
+        ):
 
             print(f"\nResult #{i}")
             print("-" * 80)
 
-            print(f"Score      : {result.score:.6f}")
-            print(f"Collection : {result.collection}")
-            print(f"ID         : {result.id}")
+            print(
+                f"Score      : "
+                f"{result.score:.6f}"
+            )
 
-            metadata = result.metadata or {}
+            print(
+                f"Collection : "
+                f"{result.collection}"
+            )
 
-            print(f"File       : {metadata.get('file_path', 'N/A')}")
+            print(
+                f"ID         : "
+                f"{result.id}"
+            )
 
-            if metadata.get("class_name"):
-                print(f"Class      : {metadata['class_name']}")
+            metadata = (
+                result.metadata or {}
+            )
 
-            if metadata.get("method_name"):
-                print(f"Method     : {metadata['method_name']}")
+            print(
+                f"Repository : "
+                f"{metadata.get('repository_name', 'N/A')}"
+            )
 
-            if metadata.get("function_name"):
-                print(f"Function   : {metadata['function_name']}")
+            print(
+                f"Branch     : "
+                f"{metadata.get('branch', 'N/A')}"
+            )
 
-            if metadata.get("start_line"):
+            print(
+                f"File       : "
+                f"{metadata.get('file_path', 'N/A')}"
+            )
+
+            if metadata.get(
+                "class_name"
+            ):
+                print(
+                    f"Class      : "
+                    f"{metadata['class_name']}"
+                )
+
+            if metadata.get(
+                "method_name"
+            ):
+                print(
+                    f"Method     : "
+                    f"{metadata['method_name']}"
+                )
+
+            if metadata.get(
+                "function_name"
+            ):
+                print(
+                    f"Function   : "
+                    f"{metadata['function_name']}"
+                )
+
+            if metadata.get(
+                "start_line"
+            ):
+
                 print(
                     f"Lines      : "
-                    f"{metadata['start_line']} - {metadata.get('end_line')}"
+                    f"{metadata['start_line']} - "
+                    f"{metadata.get('end_line')}"
                 )
 
             print()
 
-            print(result.content[:800])
+            print(
+                result.content[:800]
+            )
 
             if len(result.content) > 800:
                 print("\n...")

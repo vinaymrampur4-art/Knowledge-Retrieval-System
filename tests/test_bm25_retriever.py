@@ -22,11 +22,17 @@ parser = RepositoryParser()
 
 parser_result = parser.parse(repository)
 
-pipeline = IndexPipeline()
+repository_name = parser_result.files[0].repository_name
+
+pipeline = IndexPipeline(
+    repository_name
+)
 
 pipeline.run(parser_result)
 
-retriever = BM25Retriever()
+retriever = BM25Retriever(
+    repository_name
+)
 
 results = retriever.search(
 

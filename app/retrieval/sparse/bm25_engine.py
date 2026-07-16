@@ -1,40 +1,59 @@
 """
 Global BM25 engine.
 
-Loads the serialized BM25 index if it exists.
+Loads serialized BM25 indexes per repository.
 """
 
-from app.retrieval.sparse.bm25_index_builder import BM25IndexBuilder
-from app.retrieval.sparse.bm25_serializer import BM25Serializer
+from app.retrieval.sparse.bm25_index_builder import (
+    BM25IndexBuilder,
+)
+
+from app.retrieval.sparse.bm25_serializer import (
+    BM25Serializer,
+)
 
 
 class BM25Engine:
 
-    _builder = None
+    _builders = {}
 
     @classmethod
-    def get_builder(cls):
+    def get_builder(
+        cls,
+        repository_name: str,
+    ):
 
-        if cls._builder is None:
+        if repository_name not in cls._builders:
 
             builder = BM25IndexBuilder()
 
-            serializer = BM25Serializer()
+            serializer = BM25Serializer(
+                repository_name
+            )
 
             if serializer.exists():
 
-                print("Loading BM25 index...")
+                print(
+                    f"Loading BM25 index for "
+                    f"{repository_name}..."
+                )
 
-                builder = serializer.load(builder)
+                builder = serializer.load(
+                    builder
+                )
 
             else:
 
                 print(
-                    "WARNING: No BM25 index found.\n"
-                    "Run:\n"
-                    "python -m tests.test_index_pipeline"
+                    f"WARNING: No BM25 index found for "
+                    f"{repository_name}\n"
+                    f"Run indexing first."
                 )
 
-            cls._builder = builder
+            cls._builders[
+                repository_name
+            ] = builder
 
-        return cls._builder
+        return cls._builders[
+            repository_name
+        ]

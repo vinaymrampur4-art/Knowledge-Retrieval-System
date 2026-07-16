@@ -102,7 +102,7 @@ class ASTParser:
 
 
 
-    def parse(self, python_files: list[Path],)-> ParserResult:
+    def parse(self, python_files: list[Path],repository_root: Path,)-> ParserResult:
         """
         Parse a list of Python files.
 
@@ -132,10 +132,10 @@ class ASTParser:
 
         from app.core.config import REPOSITORY_FOLDER
 
-        while repo.name != REPOSITORY_FOLDER:
-            repo = repo.parent
 
         self.repository_root = repo
+
+        self.repository_root = repository_root
 
         logger.info(
             f"Parsing {len(python_files)} Python files..."
