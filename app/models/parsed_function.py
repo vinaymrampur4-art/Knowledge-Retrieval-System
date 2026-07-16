@@ -1,6 +1,13 @@
 from dataclasses import dataclass, field
 @dataclass
 class ParsedFunction:
+
+    repository_name: str
+
+    branch: str
+
+    github_repository: str
+
     # Required field (must come first)
     function_name: str
 

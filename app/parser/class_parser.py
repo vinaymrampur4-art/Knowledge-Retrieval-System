@@ -33,6 +33,8 @@ class ClassParser:
         file_path,
         repository_root,
         github_repo,
+        repository_name,
+        branch,
     ):
         """
         Parse all classes from an AST.
@@ -90,6 +92,12 @@ class ClassParser:
                 )
 
                 parsed_method = MethodBuilder.build(
+
+                    repository_name=repository_name,
+
+                    branch=branch,
+
+                    github_repository=github_repo,
 
                     file=file_path.name,
 
@@ -157,6 +165,12 @@ class ClassParser:
             classes.append(
 
                 ClassBuilder.build(
+
+                    repository_name=repository_name,
+
+                    branch=branch,
+
+                    github_repository=github_repo,
 
                     file=file_path.name,
 

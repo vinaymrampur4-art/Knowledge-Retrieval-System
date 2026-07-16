@@ -21,6 +21,8 @@ class ImportParser:
         tree,
         file_path,
         repository_root,
+        repository_name,
+        branch,
         github_repo,
     ):
         """
@@ -52,6 +54,12 @@ class ImportParser:
                 for alias in node.names:
 
                     parsed_import = ImportBuilder.build(
+
+                        repository_name=repository_name,
+
+                        branch=branch,
+
+                        github_repository=github_repo,
 
                         file=file_path.name,
 
@@ -90,6 +98,12 @@ class ImportParser:
                 for alias in node.names:
 
                     parsed_import = ImportBuilder.build(
+
+                        repository_name=repository_name,
+
+                        branch=branch,
+
+                        github_repository=github_repo,
 
                         file=file_path.name,
 

@@ -14,10 +14,13 @@ class FunctionBuilder(BaseBuilder):
     def build(
         cls,
         *,
+        repository_name: str,
+        branch: str,
+        github_repository: str,
         file: str,
         repo_path: str,
         github_url: str,
-        module=str,
+        module: str,
         function_name: str,
         parameters: list,
         return_type: str | None,
@@ -34,6 +37,9 @@ class FunctionBuilder(BaseBuilder):
             raise ValueError("Function name cannot be empty.")
 
         return ParsedFunction(
+            repository_name=repository_name,
+            branch=branch,
+            github_repository=github_repository,
             file=file,
             repo_path=repo_path,
             github_url=github_url,

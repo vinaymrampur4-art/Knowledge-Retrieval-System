@@ -282,6 +282,32 @@ SearchFilter(
 
 ---
 
+## Running with Docker
+
+Build the image:
+
+```bash
+docker compose build
+```
+
+Start the MCP server:
+
+```bash
+docker compose up
+```
+
+The server will be available at:
+
+```text
+http://localhost:8000/mcp
+```
+
+Stop the server:
+
+```bash
+docker compose down
+```
+
 
 ## Current Capabilities
 

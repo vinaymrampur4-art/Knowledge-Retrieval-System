@@ -60,6 +60,8 @@ class FunctionParser:
         source,
         file_path,
         repository_root,
+        repository_name,
+        branch,
         github_repo,
     ):
         """
@@ -117,6 +119,10 @@ class FunctionParser:
             decorators = self.get_decorators(node)
 
             parsed_function = FunctionBuilder.build(
+
+                repository_name=repository_name,
+                branch=branch,
+                github_repository=github_repo,
 
                 file=file_path.name,
 

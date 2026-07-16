@@ -4,6 +4,12 @@ from dataclasses import dataclass
 @dataclass
 class ParsedConstant:
 
+    repository_name: str
+
+    branch: str
+
+    github_repository: str
+
     file: str
 
     repo_path: str

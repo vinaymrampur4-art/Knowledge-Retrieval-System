@@ -4,6 +4,12 @@ from dataclasses import dataclass
 @dataclass
 class ParsedImport:
 
+    repository_name: str
+
+    branch: str
+
+    github_repository: str
+
     file: str
 
     repo_path: str

@@ -14,6 +14,9 @@ class MethodBuilder(BaseBuilder):
     def build(
         cls,
         *,
+        repository_name: str,
+        branch: str,
+        github_repository: str,
         file: str,
         repo_path: str,
         github_url: str,
@@ -40,6 +43,9 @@ class MethodBuilder(BaseBuilder):
             raise ValueError("Method name cannot be empty.")
 
         return ParsedMethod(
+            repository_name=repository_name,
+            branch=branch,
+            github_repository=github_repository,
             file=file,
             repo_path=repo_path,
             github_url=github_url,

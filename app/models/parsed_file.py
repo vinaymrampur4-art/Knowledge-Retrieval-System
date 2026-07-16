@@ -6,6 +6,11 @@ class ParsedFile:
     """
     Represents one Python source file.
     """
+    repository_name: str
+
+    branch: str
+
+    github_repository: str
 
     file_name: str
 

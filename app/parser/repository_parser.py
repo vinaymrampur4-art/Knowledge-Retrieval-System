@@ -11,7 +11,10 @@ import ast
 from pathlib import Path
 
 from app.core.logger import logger
-from app.core.config import GITHUB_REPOSITORY
+from app.core.config import (
+    GITHUB_REPOSITORY,
+    DEFAULT_BRANCH,
+)
 
 from app.models.parser_result import ParserResult
 from app.models.parsed_file import ParsedFile
@@ -115,6 +118,10 @@ class RepositoryParser:
 
         repository_root = repository_path
 
+        repository_name = repository_path.name
+
+        branch = DEFAULT_BRANCH
+
         github_repo = GITHUB_REPOSITORY
 
         result = ParserResult()
@@ -172,6 +179,12 @@ class RepositoryParser:
 
             parsed_file = ParsedFile(
 
+                repository_name=repository_name,
+
+                branch=branch,
+
+                github_repository=github_repo,
+
                 file_name=file_path.name,
 
                 repo_path=repo_path,
@@ -202,6 +215,8 @@ class RepositoryParser:
                         file_path=file_path,
                         repository_root=repository_root,
                         github_repo=github_repo,
+                        repository_name=repository_name,
+                        branch=branch,
                     )
                 )
 
@@ -223,6 +238,8 @@ class RepositoryParser:
                         source=source,
                         file_path=file_path,
                         repository_root=repository_root,
+                        repository_name=repository_name,
+                        branch=branch,
                         github_repo=github_repo,
                     )
                 )
@@ -244,6 +261,8 @@ class RepositoryParser:
                         tree=tree,
                         file_path=file_path,
                         repository_root=repository_root,
+                        repository_name=repository_name,
+                        branch=branch,
                         github_repo=github_repo,
                     )
                 )
@@ -265,6 +284,8 @@ class RepositoryParser:
                         tree=tree,
                         file_path=file_path,
                         repository_root=repository_root,
+                        repository_name=repository_name,
+                        branch=branch,
                         github_repo=github_repo,
                     )
                 )

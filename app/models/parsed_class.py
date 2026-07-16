@@ -6,6 +6,12 @@ from app.models.parsed_method import ParsedMethod
 @dataclass
 class ParsedClass:
 
+    repository_name: str
+
+    branch: str
+
+    github_repository: str
+
     file: str
 
     repo_path: str

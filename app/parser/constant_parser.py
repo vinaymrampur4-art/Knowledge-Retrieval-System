@@ -21,6 +21,8 @@ class ConstantParser:
         tree,
         file_path,
         repository_root,
+        repository_name,
+        branch,
         github_repo,
     ):
         """
@@ -74,6 +76,10 @@ class ConstantParser:
                     value_type = type(node.value).__name__
 
                 parsed_constant = ConstantBuilder.build(
+
+                    repository_name=repository_name,
+                    branch=branch,
+                    github_repository=github_repo,
 
                     file=file_path.name,
 
