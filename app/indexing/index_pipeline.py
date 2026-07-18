@@ -22,6 +22,7 @@ from app.indexing.embedding_generator import (
     DocumentEmbeddingGenerator,
 )
 
+from app.models import parser_result
 from app.vectordb.indexer import (
     ChromaIndexer,
 )
@@ -75,16 +76,8 @@ class IndexPipeline:
         # Build Documents
         # -----------------------------------------------------
 
-        print("Building documents...")
-
-        documents = (
-            ParserDocumentFactory.build(
-                parser_result
-            )
-        )
-
-        print(
-            f"Documents: {len(documents)}"
+        documents = self._build_documents(
+            parser_result
         )
 
         # -----------------------------------------------------
@@ -147,3 +140,23 @@ class IndexPipeline:
         )
 
         print("Done.")
+
+    def _build_documents(
+        self,
+        parser_result: parser_result.ParserResult,
+    ):
+        """
+        Builds searchable documents from the parser output.
+        """
+
+        print("Building documents...")
+
+        documents = ParserDocumentFactory.build(
+            parser_result
+        )
+
+        print(
+            f"Documents: {len(documents)}"
+        )
+
+        return documents

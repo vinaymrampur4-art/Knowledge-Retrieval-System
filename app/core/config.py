@@ -241,3 +241,17 @@ for directory in [
         parents=True,
         exist_ok=True,
     )
+
+# ==========================================================
+# Incremental Sync
+# ==========================================================
+
+SYNC_OUTPUT_DIR = (
+    OUTPUT_DIR /
+    "sync"
+)
+
+SYNC_OUTPUT_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
+)
