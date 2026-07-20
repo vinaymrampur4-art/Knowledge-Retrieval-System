@@ -352,8 +352,19 @@ class RepositoryParser:
 
         for file_path in file_paths:
 
+            file_path = Path(file_path)
+
+            if not file_path.is_absolute():
+                file_path = repository_root / file_path
+
+            if not file_path.exists():
+                logger.warning(
+                    f"Changed file not found: {file_path}"
+                )
+                continue
+
             self._parse_file(
-                file_path=Path(file_path),
+                file_path=file_path,
                 repository_root=repository_root,
                 repository_name=repository_name,
                 branch=branch,

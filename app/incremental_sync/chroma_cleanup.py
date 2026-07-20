@@ -24,29 +24,18 @@ class ChromaCleanupService:
     """
     Removes outdated documents from every ChromaDB
     collection before incremental re-indexing.
-
-    Documents are identified using metadata instead
-    of document id prefixes.
     """
 
-    def __init__(
-        self,
-    ) -> None:
+    def __init__(self) -> None:
 
         self.client = ChromaClient.get_client()
 
         self.collection_names = [
-
             FILES_COLLECTION,
-
             CLASSES_COLLECTION,
-
             METHODS_COLLECTION,
-
             FUNCTIONS_COLLECTION,
-
             CODE_BLOCK_COLLECTION,
-
         ]
 
     # ==========================================================
@@ -58,10 +47,10 @@ class ChromaCleanupService:
         collection_name: str,
     ):
         """
-        Returns a Chroma collection.
+        Returns an existing Chroma collection.
         """
 
-        return self.client.get_or_create_collection(
+        return self.client.get_collection(
             name=collection_name,
         )
 
@@ -76,20 +65,21 @@ class ChromaCleanupService:
         file_path: str,
     ) -> dict:
         """
-        Builds the metadata filter used for cleanup.
+        Builds the Chroma metadata filter.
         """
 
         return {
-
-            "repository_name":
-                repository_name,
-
-            "branch":
-                branch,
-
-            "file_path":
-                file_path,
-
+            "$and": [
+                {
+                    "repository_name": repository_name,
+                },
+                {
+                    "branch": branch,
+                },
+                {
+                    "file_path": file_path,
+                },
+            ]
         }
 
     # ==========================================================
@@ -104,8 +94,8 @@ class ChromaCleanupService:
         file_path: str,
     ) -> None:
         """
-        Deletes every document belonging to a file
-        from a single Chroma collection.
+        Deletes all documents for a file
+        from one Chroma collection.
         """
 
         collection = self._get_collection(
@@ -113,47 +103,30 @@ class ChromaCleanupService:
         )
 
         where = self._build_where_clause(
-
             repository_name,
-
             branch,
-
             file_path,
-
         )
 
         logger.info(
-
-            f"Cleaning collection "
-
-            f"{collection_name} "
-
-            f"for "
-
-            f"{repository_name}/"
-
-            f"{branch}/"
-
-            f"{file_path}"
-
+            "Cleaning collection %s for %s/%s/%s",
+            collection_name,
+            repository_name,
+            branch,
+            file_path,
         )
 
         try:
 
             collection.delete(
-
                 where=where,
-
             )
 
         except Exception:
 
             logger.exception(
-
-                f"Failed cleaning "
-
-                f"{collection_name}"
-
+                "Failed cleaning collection %s",
+                collection_name,
             )
 
             raise
@@ -169,24 +142,15 @@ class ChromaCleanupService:
         file_path: str,
     ) -> None:
         """
-        Deletes every document generated from the given
-        source file across every Chroma collection.
-
-        Parameters
-        ----------
-        repository_name:
-            Repository containing the file.
-
-        branch:
-            Repository branch.
-
-        file_path:
-            Repository-relative path of the file.
+        Deletes every document generated from a file
+        across all Chroma collections.
         """
 
         logger.info(
-            f"Starting Chroma cleanup for "
-            f"{repository_name}/{branch}/{file_path}"
+            "Starting Chroma cleanup for %s/%s/%s",
+            repository_name,
+            branch,
+            file_path,
         )
 
         for collection_name in self.collection_names:
@@ -199,8 +163,10 @@ class ChromaCleanupService:
             )
 
         logger.info(
-            f"Finished Chroma cleanup for "
-            f"{repository_name}/{branch}/{file_path}"
+            "Finished Chroma cleanup for %s/%s/%s",
+            repository_name,
+            branch,
+            file_path,
         )
 
     # ==========================================================
@@ -215,17 +181,6 @@ class ChromaCleanupService:
     ) -> None:
         """
         Deletes documents belonging to multiple files.
-
-        Parameters
-        ----------
-        repository_name:
-            Repository containing the files.
-
-        branch:
-            Repository branch.
-
-        file_paths:
-            Repository-relative file paths.
         """
 
         if not file_paths:
@@ -237,8 +192,8 @@ class ChromaCleanupService:
             return
 
         logger.info(
-            f"Cleaning {len(file_paths)} files "
-            f"from ChromaDB."
+            "Cleaning %d files from ChromaDB.",
+            len(file_paths),
         )
 
         for file_path in file_paths:
