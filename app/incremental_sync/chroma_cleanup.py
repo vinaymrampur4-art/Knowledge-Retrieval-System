@@ -82,6 +82,27 @@ class ChromaCleanupService:
             ]
         }
 
+    @staticmethod
+    def _build_repository_where_clause(
+        repository_name: str,
+        branch: str,
+    ) -> dict:
+        """
+        Builds the Chroma metadata filter for an
+        entire repository.
+        """
+
+        return {
+            "$and": [
+                {
+                    "repository_name": repository_name,
+                },
+                {
+                    "branch": branch,
+                },
+            ]
+        }
+
     # ==========================================================
     # Cleanup
     # ==========================================================
@@ -206,4 +227,59 @@ class ChromaCleanupService:
 
         logger.info(
             "Batch cleanup completed."
+        )
+
+    # ==========================================================
+    # Repository Cleanup
+    # ==========================================================
+
+    def delete_repository_documents(
+        self,
+        repository_name: str,
+        branch: str,
+    ) -> None:
+        """
+        Deletes every document belonging to a repository
+        across all Chroma collections.
+        """
+
+        logger.info(
+            "Starting repository cleanup for %s/%s",
+            repository_name,
+            branch,
+        )
+
+        where = self._build_repository_where_clause(
+            repository_name,
+            branch,
+        )
+
+        for collection_name in self.collection_names:
+
+            logger.info(
+                "Cleaning collection %s",
+                collection_name,
+            )
+
+            collection = self._get_collection(
+                collection_name
+            )
+
+            try:
+
+                collection.delete(
+                    where=where,
+                )
+
+            except Exception:
+
+                logger.exception(
+                    "Failed cleaning collection %s",
+                    collection_name,
+                )
+
+                raise
+
+        logger.info(
+            "Repository cleanup completed."
         )

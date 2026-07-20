@@ -65,6 +65,11 @@ class SearchRequest(BaseModel):
     Request received by the MCP search tool.
     """
 
+    repository_name: str = Field(
+        ...,
+        description="Repository to search.",
+    )
+
     query: str = Field(
         ...,
         description="Natural language search query.",

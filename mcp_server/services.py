@@ -94,7 +94,6 @@ from mcp_server.models import (
 # RETRIEVERS / SERVICES
 # ==========================================================
 
-retriever = HybridRetriever()
 
 chroma = ChromaRetriever()
 
@@ -135,6 +134,10 @@ def execute_search(
     print(type(request.filter))
     print(request.filter)
     print("=" * 80)
+
+    retriever = HybridRetriever(
+    repository_name=request.repository_name,
+    )
 
     results = retriever.search(
         query=request.query,

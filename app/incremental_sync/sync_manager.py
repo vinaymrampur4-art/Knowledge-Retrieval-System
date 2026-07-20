@@ -1,32 +1,16 @@
 """
 sync_manager.py
 
-Orchestrates repository synchronization.
-
-This class decides whether to execute a full indexing
-run or an incremental synchronization.
+Coordinates repository synchronization.
 """
 
 from __future__ import annotations
 
 from app.incremental_sync.git_service import GitService
+from app.incremental_sync.sync_mode import SyncMode
+from app.incremental_sync.full_sync_service import FullSyncService
 from app.incremental_sync.incremental_sync_service import (
     IncrementalSyncService,
-)
-from app.incremental_sync.sync_models import (
-    ChangedFiles,
-)
-
-from app.parser.repository_parser import (
-    RepositoryParser,
-)
-
-from app.indexing.index_pipeline import (
-    IndexPipeline,
-)
-
-from app.core.config import (
-    REPOSITORIES_DIR,
 )
 
 from app.core.logger import logger
@@ -36,23 +20,14 @@ class SyncManager:
     """
     Coordinates repository synchronization.
 
-    Workflow
-    --------
-    First Synchronization
+    Supported modes
+    ---------------
 
-        RepositoryParser.parse()
+    FULL
+        Rebuilds the complete repository index.
 
-                ↓
-
-        IndexPipeline.run()
-
-                ↓
-
-        Save Sync State
-
-    Incremental Synchronization
-
-        IncrementalSyncService.sync()
+    INCREMENTAL
+        Updates only changed files.
     """
 
     def __init__(
@@ -62,126 +37,32 @@ class SyncManager:
 
         self.repository_name = repository_name
 
-        self.repository_path = (
-            REPOSITORIES_DIR /
-            repository_name
+        self.git_service = GitService(
+            repository_name,
         )
 
-        self.git_service = GitService(
-            repository_name=repository_name,
+        self.full_sync = FullSyncService(
+            repository_name,
+        )
+
+        self.incremental_sync = (
+            IncrementalSyncService(
+                repository_name,
+            )
         )
 
     # ==========================================================
-    # Sync State
+    # Helpers
     # ==========================================================
 
     def is_first_sync(
         self,
     ) -> bool:
         """
-        Returns True if the repository has never
-        been synchronized.
+        Returns True if no synchronization state exists.
         """
 
         return not self.git_service.sync_file_exists()
-
-    def get_last_synced_commit(
-        self,
-    ) -> str | None:
-        """
-        Returns the last synchronized commit.
-        """
-
-        state = self.git_service.load_sync_state()
-
-        if state is None:
-            return None
-
-        return state.last_commit
-
-    # ==========================================================
-    # Changed Files
-    # ==========================================================
-
-    def get_changed_files(
-        self,
-    ) -> ChangedFiles:
-        """
-        Returns files changed since the previous
-        synchronization.
-        """
-
-        if self.is_first_sync():
-            return ChangedFiles()
-
-        last_commit = self.get_last_synced_commit()
-
-        if last_commit is None:
-            return ChangedFiles()
-
-        return self.git_service.get_changed_files(
-            last_commit
-        )
-
-    # ==========================================================
-    # Full Indexing
-    # ==========================================================
-
-    def _run_full_indexing(
-        self,
-    ) -> None:
-        """
-        Executes the initial full indexing pipeline.
-        """
-
-        logger.info(
-            "Starting full repository indexing..."
-        )
-
-        parser = RepositoryParser()
-
-        parser_result = parser.parse(
-            self.repository_path
-        )
-
-        pipeline = IndexPipeline(
-            self.repository_name
-        )
-
-        pipeline.run(
-            parser_result
-        )
-
-        self.save_sync_state()
-
-        logger.info(
-            "Full indexing completed."
-        )
-
-    # ==========================================================
-    # Incremental Sync
-    # ==========================================================
-
-    def _run_incremental_sync(
-        self,
-    ) -> None:
-        """
-        Executes incremental synchronization.
-        """
-
-        logger.info(
-            "Starting incremental synchronization..."
-        )
-
-        service = IncrementalSyncService(
-            self.repository_name
-        )
-
-        service.sync()
-
-        logger.info(
-            "Incremental synchronization completed."
-        )
 
     # ==========================================================
     # Public API
@@ -189,44 +70,42 @@ class SyncManager:
 
     def sync(
         self,
+        mode: SyncMode | None = None,
     ) -> None:
         """
-        Synchronizes the repository.
+        Executes repository synchronization.
 
-        First execution
-        ----------------
-        Performs a complete repository indexing.
+        Parameters
+        ----------
+        mode:
+            Synchronization mode.
 
-        Subsequent executions
-        ---------------------
-        Performs an incremental synchronization.
+            If omitted:
+
+            • First execution -> FULL
+
+            • Later executions -> INCREMENTAL
         """
 
-        if self.is_first_sync():
+        if mode is None:
 
-            logger.info(
-                "First synchronization detected."
-            )
+            if self.is_first_sync():
 
-            self._run_full_indexing()
+                mode = SyncMode.FULL
+
+            else:
+
+                mode = SyncMode.INCREMENTAL
+
+        logger.info(
+            "Synchronization mode: %s",
+            mode.value,
+        )
+
+        if mode == SyncMode.FULL:
+
+            self.full_sync.sync()
 
             return
 
-        logger.info(
-            "Existing synchronization detected."
-        )
-
-        self._run_incremental_sync()
-
-    # ==========================================================
-    # Sync State
-    # ==========================================================
-
-    def save_sync_state(
-        self,
-    ) -> None:
-        """
-        Saves the latest synchronization state.
-        """
-
-        self.git_service.save_latest_sync_state()
+        self.incremental_sync.sync()

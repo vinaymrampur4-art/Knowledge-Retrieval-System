@@ -13,7 +13,7 @@ for a collection of representative software engineering queries.
 from app.retrieval.dense_retriever import DenseRetriever
 from app.retrieval.sparse.bm25_retriever import BM25Retriever
 from app.retrieval.hybrid.hybrid_retriever import HybridRetriever
-
+from app.core.config import REPOSITORY_FOLDER
 
 TEST_QUERIES = [
 
@@ -85,9 +85,15 @@ def main():
 
     dense = DenseRetriever()
 
-    bm25 = BM25Retriever()
+    repository_name = REPOSITORY_FOLDER
 
-    hybrid = HybridRetriever()
+    bm25 = BM25Retriever(
+        repository_name
+    )
+
+    hybrid = HybridRetriever(
+        repository_name
+    )
 
     for query in TEST_QUERIES:
 

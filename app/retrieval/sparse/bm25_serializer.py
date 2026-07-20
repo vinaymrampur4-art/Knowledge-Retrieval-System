@@ -8,8 +8,6 @@ import pickle
 
 from app.core.config import (
     BM25_OUTPUT_DIR,
-    BM25_INDEX_FILE,
-    BM25_STORE_FILE,
 )
 
 
@@ -43,11 +41,22 @@ class BM25Serializer:
         )
 
     # ---------------------------------------------------------
+    # Save
+    # ---------------------------------------------------------
 
     def save(
         self,
         builder,
     ):
+
+        print("\n" + "=" * 80)
+        print("SAVING BM25")
+        print("=" * 80)
+        print(f"Repository     : {self.repository_name}")
+        print(f"Repository Dir : {self.repository_dir.resolve()}")
+        print(f"Index File     : {self.index_file.resolve()}")
+        print(f"Store File     : {self.store_file.resolve()}")
+        print("=" * 80)
 
         with open(
             self.index_file,
@@ -70,11 +79,21 @@ class BM25Serializer:
             )
 
     # ---------------------------------------------------------
+    # Load
+    # ---------------------------------------------------------
 
     def load(
         self,
         builder,
     ):
+
+        print("\n" + "=" * 80)
+        print("LOADING BM25")
+        print("=" * 80)
+        print(f"Repository     : {self.repository_name}")
+        print(f"Index File     : {self.index_file.resolve()}")
+        print(f"Store File     : {self.store_file.resolve()}")
+        print("=" * 80)
 
         with open(
             self.index_file,
@@ -97,15 +116,30 @@ class BM25Serializer:
         return builder
 
     # ---------------------------------------------------------
+    # Exists
+    # ---------------------------------------------------------
 
     def exists(self):
 
+        print("\n" + "=" * 80)
+        print("BM25Serializer.exists()")
+        print("=" * 80)
+
+        print(f"Repository      : {self.repository_name}")
+        print(f"Repository Dir  : {self.repository_dir.resolve()}")
+        print(f"Index File      : {self.index_file.resolve()}")
+        print(f"Store File      : {self.store_file.resolve()}")
+
+        index_exists = self.index_file.exists()
+        store_exists = self.store_file.exists()
+
+        print(f"Index Exists    : {index_exists}")
+        print(f"Store Exists    : {store_exists}")
+
+        print("=" * 80 + "\n")
+
         return (
-
-            self.index_file.exists()
-
+            index_exists
             and
-
-            self.store_file.exists()
-
+            store_exists
         )

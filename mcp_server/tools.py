@@ -42,6 +42,7 @@ from mcp_server.mcp_instance import mcp
 
 @mcp.tool()
 def search_via_query(
+    repository_name: str,
     query: str,
     collection_name: str | None = None,
     filter: SearchFilter | None = None,
@@ -131,6 +132,7 @@ def search_via_query(
     """
 
     request = SearchRequest(
+        repository_name=repository_name,
         query=query,
         collection_name=collection_name,
         top_k=top_k,
@@ -147,6 +149,7 @@ def search_via_query(
 
 @mcp.tool()
 def search_methods(
+    repository_name: str,
     query: str,
     filter: SearchFilter | None = None,
     top_k: int = 5,
@@ -214,6 +217,7 @@ def search_methods(
     """
 
     return search_via_query(
+        repository_name=repository_name,
         query=query,
         collection_name="methods",
         filter=filter,
@@ -228,6 +232,7 @@ def search_methods(
 
 @mcp.tool()
 def search_classes(
+    repository_name: str,
     query: str,
     filter: SearchFilter | None = None,
     top_k: int = 5,
@@ -275,6 +280,7 @@ def search_classes(
     """
 
     return search_via_query(
+        repository_name=repository_name,
         query=query,
         collection_name="classes",
         filter=filter,
@@ -289,6 +295,7 @@ def search_classes(
 
 @mcp.tool()
 def search_files(
+    repository_name: str,
     query: str,
     filter: SearchFilter | None = None,
     top_k: int = 5,
@@ -336,6 +343,7 @@ def search_files(
     """ 
 
     return search_via_query(
+        repository_name=repository_name,
         query=query,
         collection_name="files",
         filter=filter,
@@ -350,6 +358,7 @@ def search_files(
 
 @mcp.tool()
 def search_functions(
+    repository_name: str,
     query: str,
     filter: SearchFilter | None = None,
     top_k: int = 5,
@@ -397,6 +406,7 @@ def search_functions(
     """
 
     return search_via_query(    
+        repository_name=repository_name,
         query=query,
         collection_name="functions",
         filter=filter,
@@ -411,6 +421,7 @@ def search_functions(
 
 @mcp.tool()
 def search_code(
+    repository_name: str,
     query: str,
     filter: SearchFilter | None = None,
     top_k: int = 5,
@@ -458,6 +469,7 @@ def search_code(
     """
 
     return search_via_query(
+        repository_name=repository_name,
         query=query,
         collection_name="code_blocks",
         filter=filter,
