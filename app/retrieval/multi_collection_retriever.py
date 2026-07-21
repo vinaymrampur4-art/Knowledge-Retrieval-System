@@ -5,6 +5,8 @@ Searches one or more ChromaDB collections and returns
 a unified ranked list of SearchResult objects.
 """
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from mcp_server.models import SearchFilter
 
 from app.core.config import (
@@ -35,6 +37,36 @@ class MultiCollectionRetriever:
     def __init__(self):
 
         self.retriever = ChromaRetriever()
+
+    # ---------------------------------------------------------
+
+    def _search_collection(
+        self,
+        collection: str,
+        query_embedding: list[float],
+        filter: SearchFilter | None,
+        top_k: int,
+    ) -> list[SearchResult]:
+        """
+        Search a single collection.
+        """
+
+        try:
+
+            return self.retriever.search(
+                collection_name=collection,
+                query_embedding=query_embedding,
+                filter=filter,
+                top_k=top_k,
+            )
+
+        except Exception as e:
+
+            print(
+                f"[WARNING] Failed searching {collection}: {e}"
+            )
+
+            return []
 
     # ---------------------------------------------------------
 
@@ -81,24 +113,28 @@ class MultiCollectionRetriever:
 
         all_results: list[SearchResult] = []
 
-        for collection in collections:
+        # -----------------------------------------------------
+        # Search all collections concurrently
+        # -----------------------------------------------------
 
-            try:
+        with ThreadPoolExecutor(
+            max_workers=len(collections)
+        ) as executor:
 
-                results = self.retriever.search(
-                    collection_name=collection,
-                    query_embedding=query_embedding,
-                    filter=filter,
-                    top_k=top_k,
+            futures = [
+                executor.submit(
+                    self._search_collection,
+                    collection,
+                    query_embedding,
+                    filter,
+                    top_k,
                 )
+                for collection in collections
+            ]
 
-                all_results.extend(results)
+            for future in as_completed(futures):
 
-            except Exception as e:
-
-                print(
-                    f"[WARNING] Failed searching {collection}: {e}"
-                )
+                all_results.extend(future.result())
 
         return self._rank_results(
             all_results,
