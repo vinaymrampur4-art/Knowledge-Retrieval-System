@@ -101,6 +101,63 @@ class ChromaRetriever:
             )
 
         return results
+    
+    # ---------------------------------------------------------
+    # Batch Search
+    # ---------------------------------------------------------
+
+    def search_batch(
+        self,
+        collection_name: str,
+        query_embeddings: list[list[float]],
+        filter: SearchFilter | None = None,
+        top_k: int = 5,
+    ) -> list[list[SearchResult]]:
+        """
+        Perform semantic search for multiple query embeddings
+        in a single ChromaDB request.
+
+        Parameters
+        ----------
+        collection_name : str
+            Chroma collection.
+
+        query_embeddings : list[list[float]]
+            List of embedded queries.
+
+        filter : SearchFilter | None
+            Optional metadata filter.
+
+        top_k : int
+            Number of nearest neighbours.
+
+        Returns
+        -------
+        list[list[SearchResult]]
+            Search results for each query.
+        """
+
+        collection = self.client.get_collection(
+            name=collection_name,
+        )
+
+        where = FilterBuilder.build(filter)
+
+        response = collection.query(
+            query_embeddings=query_embeddings,
+            n_results=top_k,
+            where=where,
+            include=[
+                "documents",
+                "metadatas",
+                "distances",
+            ],
+        )
+
+        return self._build_batch_results(
+            collection_name,
+            response,
+        )
 
     # ---------------------------------------------------------
     # Get By ID
@@ -232,3 +289,53 @@ class ChromaRetriever:
             )
 
         return search_results
+    
+    # ---------------------------------------------------------
+    # Internal Helpers (Batch)
+    # ---------------------------------------------------------
+
+    def _build_batch_results(
+        self,
+        collection_name: str,
+        response: dict,
+    ) -> list[list[SearchResult]]:
+        """
+        Convert a batched Chroma response into SearchResults.
+        """
+
+        all_results: list[list[SearchResult]] = []
+
+        ids = response.get("ids", [])
+        documents = response.get("documents", [])
+        metadatas = response.get("metadatas", [])
+        distances = response.get("distances", [])
+
+        for query_ids, query_docs, query_meta, query_dist in zip(
+            ids,
+            documents,
+            metadatas,
+            distances,
+        ):
+
+            results: list[SearchResult] = []
+
+            for doc_id, document, metadata, distance in zip(
+                query_ids,
+                query_docs,
+                query_meta,
+                query_dist,
+            ):
+
+                results.append(
+                    SearchResult(
+                        id=doc_id,
+                        score=1.0 - float(distance),
+                        content=document,
+                        collection=collection_name,
+                        metadata=metadata or {},
+                    )
+                )
+
+            all_results.append(results)
+
+        return all_results
