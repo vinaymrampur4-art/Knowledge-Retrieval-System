@@ -255,3 +255,12 @@ SYNC_OUTPUT_DIR.mkdir(
     parents=True,
     exist_ok=True,
 )
+
+# ==========================================================
+# Reranker
+# ==========================================================
+
+RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+# Number of hybrid candidates passed to the CrossEncoder
+RERANK_CANDIDATES = 20

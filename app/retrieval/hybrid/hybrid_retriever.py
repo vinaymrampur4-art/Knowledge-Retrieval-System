@@ -16,6 +16,8 @@ from app.retrieval.reranker.reranker import Reranker
 
 from app.retrieval.search_result import SearchResult
 
+from app.core.config import RERANK_CANDIDATES
+
 
 class HybridRetriever:
 
@@ -35,6 +37,8 @@ class HybridRetriever:
         self.rrf = RRFRanker()
 
         self.reranker = Reranker()
+
+        self.rerank_candidates = RERANK_CANDIDATES
 
     # ---------------------------------------------------------
     # Debug Helper
@@ -87,6 +91,7 @@ class HybridRetriever:
         dense_ms: float,
         bm25_ms: float,
         rrf_ms: float,
+        rerank_candidates: int,
         reranker_ms: float,
         total_ms: float,
     ):
@@ -103,6 +108,7 @@ class HybridRetriever:
         print(f"Dense Retrieval    : {dense_ms:8.2f} ms")
         print(f"BM25 Retrieval     : {bm25_ms:8.2f} ms")
         print(f"RRF Fusion         : {rrf_ms:8.2f} ms")
+        print(f"Rerank Candidates  : {rerank_candidates}")
         print(f"Cross Encoder      : {reranker_ms:8.2f} ms")
 
         print("-" * 80)
@@ -128,7 +134,7 @@ class HybridRetriever:
         overall_start = time.perf_counter()
 
         candidate_k = max(
-            20,
+            self.rerank_candidates,
             top_k * 4,
         )
 
@@ -216,10 +222,13 @@ class HybridRetriever:
 
         reranker_start = time.perf_counter()
 
+        # Limit the number of candidates sent to the CrossEncoder
+        rerank_input = hybrid_results[:self.rerank_candidates]
+
         reranked_results = (
             self.reranker.rerank(
                 query=query,
-                results=hybrid_results,
+                results=rerank_input,
                 top_k=top_k,
             )
         )
@@ -248,6 +257,7 @@ class HybridRetriever:
             dense_ms=dense_ms,
             bm25_ms=bm25_ms,
             rrf_ms=rrf_ms,
+            rerank_candidates=len(rerank_input),
             reranker_ms=reranker_ms,
             total_ms=total_ms,
         )

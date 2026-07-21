@@ -109,3 +109,53 @@ class DenseRetriever(BaseRetriever):
         print("=" * 80)
 
         return results
+
+    # ---------------------------------------------------------
+
+    def search_batch(
+        self,
+        queries: list[str],
+        collections: list[str] | None = None,
+        filter: SearchFilter | None = None,
+        top_k: int = 10,
+    ) -> list[list[SearchResult]]:
+        """
+        Perform dense retrieval for multiple queries.
+        """
+
+        embedding_start = time.perf_counter()
+
+        embeddings = self.embedder.embed_batch(
+            queries,
+        )
+
+        embedding_time = (
+            time.perf_counter() - embedding_start
+        ) * 1000
+
+        search_start = time.perf_counter()
+
+        results = self.retriever.search_batch(
+            query_embeddings=embeddings,
+            collections=collections,
+            filter=filter,
+            top_k=top_k,
+        )
+
+        search_time = (
+            time.perf_counter() - search_start
+        ) * 1000
+
+        print("=" * 80)
+        print("DENSE BATCH RETRIEVAL LATENCY")
+        print("=" * 80)
+        print(f"Queries             : {len(queries)}")
+        print(f"Embedding Time      : {embedding_time:.2f} ms")
+        print(f"Chroma Search Time  : {search_time:.2f} ms")
+        print(
+            f"Total Batch Time    : "
+            f"{embedding_time + search_time:.2f} ms"
+        )
+        print("=" * 80)
+
+        return results

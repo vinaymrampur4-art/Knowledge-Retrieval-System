@@ -5,8 +5,6 @@ Searches one or more ChromaDB collections and returns
 a unified ranked list of SearchResult objects.
 """
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 from mcp_server.models import SearchFilter
 
 from app.core.config import (
@@ -70,6 +68,36 @@ class MultiCollectionRetriever:
 
     # ---------------------------------------------------------
 
+    def _search_collection_batch(
+        self,
+        collection: str,
+        query_embeddings: list[list[float]],
+        filter: SearchFilter | None,
+        top_k: int,
+    ) -> list[list[SearchResult]]:
+        """
+        Search a single collection for multiple queries.
+        """
+
+        try:
+
+            return self.retriever.search_batch(
+                collection_name=collection,
+                query_embeddings=query_embeddings,
+                filter=filter,
+                top_k=top_k,
+            )
+
+        except Exception as e:
+
+            print(
+                f"[WARNING] Failed searching {collection}: {e}"
+            )
+
+            return [[] for _ in query_embeddings]
+
+    # ---------------------------------------------------------
+
     def search(
         self,
         query_embedding: list[float],
@@ -114,32 +142,87 @@ class MultiCollectionRetriever:
         all_results: list[SearchResult] = []
 
         # -----------------------------------------------------
-        # Search all collections concurrently
+        # Search all collections sequentially
         # -----------------------------------------------------
 
-        with ThreadPoolExecutor(
-            max_workers=len(collections)
-        ) as executor:
+        for collection in collections:
 
-            futures = [
-                executor.submit(
-                    self._search_collection,
-                    collection,
-                    query_embedding,
-                    filter,
-                    top_k,
-                )
-                for collection in collections
-            ]
+            results = self._search_collection(
+                collection=collection,
+                query_embedding=query_embedding,
+                filter=filter,
+                top_k=top_k,
+            )
 
-            for future in as_completed(futures):
-
-                all_results.extend(future.result())
+            all_results.extend(results)
 
         return self._rank_results(
             all_results,
             top_k,
         )
+
+    # ---------------------------------------------------------
+
+    def search_batch(
+        self,
+        query_embeddings: list[list[float]],
+        collections: list[str] | None = None,
+        filter: SearchFilter | None = None,
+        top_k: int = 5,
+    ) -> list[list[SearchResult]]:
+        """
+        Search multiple collections for multiple queries.
+
+        Parameters
+        ----------
+        query_embeddings : list[list[float]]
+            Embedded user queries.
+
+        collections : list[str] | None
+            Collections to search.
+
+        filter : SearchFilter | None
+            Optional metadata filter.
+
+        top_k : int
+            Number of results per collection.
+
+        Returns
+        -------
+        list[list[SearchResult]]
+            Ranked results for each query.
+        """
+
+        if collections is None:
+            collections = self.DEFAULT_COLLECTIONS
+
+        all_query_results: list[list[SearchResult]] = [
+            [] for _ in query_embeddings
+        ]
+
+        for collection in collections:
+
+            collection_results = self._search_collection_batch(
+                collection=collection,
+                query_embeddings=query_embeddings,
+                filter=filter,
+                top_k=top_k,
+            )
+
+            for index, results in enumerate(collection_results):
+                all_query_results[index].extend(results)
+
+        ranked_results: list[list[SearchResult]] = []
+
+        for results in all_query_results:
+            ranked_results.append(
+                self._rank_results(
+                    results,
+                    top_k,
+                )
+            )
+
+        return ranked_results
 
     # ---------------------------------------------------------
 

@@ -154,10 +154,29 @@ class ChromaRetriever:
             ],
         )
 
-        return self._build_batch_results(
+        results = self._build_batch_results(
             collection_name,
             response,
         )
+
+        if (
+            filter is not None
+            and filter.constraint in [
+                "contains",
+                "startswith",
+                "endswith",
+            ]
+        ):
+
+            results = [
+                FilterBuilder.filter_results(
+                    query_results,
+                    filter,
+                )
+                for query_results in results
+            ]
+
+        return results
 
     # ---------------------------------------------------------
     # Get By ID

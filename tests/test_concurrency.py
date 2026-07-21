@@ -1,135 +1,160 @@
 """
 test_concurrency.py
 
-Benchmark concurrent HybridRetriever searches.
+Benchmark Concurrent Dense Retrieval.
 
 Measures:
-- Individual query latency
-- Average latency
-- Min latency
-- Max latency
-- Total execution time
-- Throughput (queries/sec)
+- Concurrent Users
+- Successful Queries
+- Failed Queries
+- Total Time
+- Average Latency
+- Throughput
 """
 
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from app.retrieval.hybrid.hybrid_retriever import HybridRetriever
+from app.retrieval.dense_retriever import DenseRetriever
 
 # ==========================================================
 # Configuration
 # ==========================================================
 
-REPOSITORY = "fastapi-master"
+QUERY = "what is fastapi"
 
-CONCURRENT_USERS = 50
-
-QUERIES = [
-    "what is fastapi",
-    "what is APIRouter",
-    "what is dependency injection",
-    "what is BaseModel",
-    "how are routes created",
-    "how middleware works",
-    "how startup events work",
-    "what is BackgroundTasks",
-    "how request validation works",
-    "how response models work",
-    "what is Depends",
-    "how exceptions are handled",
-    "what is UploadFile",
-    "how websocket works",
-    "what is lifespan",
-    "what is routing",
-    "what is JSONResponse",
-    "how security works",
-    "what is OAuth2",
-    "what is Header",
+CONCURRENCY_LEVELS = [
+    1,
+    5,
+    10,
+    25,
+    50,
+    100,
 ]
 
-QUERIES = (QUERIES * 3)[:50]
+TOP_K = 5
 
-# ==========================================================
-
-retriever = HybridRetriever(
-    repository_name=REPOSITORY,
-)
+retriever = DenseRetriever()
 
 # ==========================================================
 
 
-def run_query(query: str) -> float:
+def execute_search():
+
     start = time.perf_counter()
 
-    retriever.search(
-        query=query,
-        top_k=5,
-    )
+    try:
+        retriever.search(
+            query=QUERY,
+            top_k=TOP_K,
+        )
 
-    return (time.perf_counter() - start) * 1000
+        latency = time.perf_counter() - start
 
+        return True, latency
 
-# ==========================================================
+    except Exception:
 
-print("=" * 80)
-print("CONCURRENCY BENCHMARK")
-print("=" * 80)
-print(f"Repository        : {REPOSITORY}")
-print(f"Concurrent Users  : {CONCURRENT_USERS}")
-print(f"Queries Submitted : {len(QUERIES)}")
-print("=" * 80)
+        latency = time.perf_counter() - start
 
-overall_start = time.perf_counter()
+        return False, latency
 
-latencies = []
-failed = 0
-
-with ThreadPoolExecutor(max_workers=CONCURRENT_USERS) as executor:
-
-    future_to_query = {
-        executor.submit(run_query, query): query
-        for query in QUERIES
-    }
-
-    for future in as_completed(future_to_query):
-
-        try:
-            latency = future.result()
-            latencies.append(latency)
-
-        except Exception as e:
-            failed += 1
-            print(f"[ERROR] {future_to_query[future]} -> {e}")
-
-overall_time = time.perf_counter() - overall_start
-
-successful = len(latencies)
 
 # ==========================================================
 
-if successful:
+print("=" * 80)
+print("DENSE RETRIEVAL CONCURRENCY BENCHMARK")
+print("=" * 80)
 
-    average_latency = sum(latencies) / successful
-    minimum_latency = min(latencies)
-    maximum_latency = max(latencies)
-    throughput = successful / overall_time
+results = []
+
+# ==========================================================
+
+for users in CONCURRENCY_LEVELS:
 
     print()
     print("=" * 80)
-    print("RESULTS")
+    print(f"Concurrent Users : {users}")
     print("=" * 80)
+
+    benchmark_start = time.perf_counter()
+
+    successful = 0
+    failed = 0
+
+    latencies = []
+
+    with ThreadPoolExecutor(max_workers=users) as executor:
+
+        futures = [
+            executor.submit(execute_search)
+            for _ in range(users)
+        ]
+
+        for future in as_completed(futures):
+
+            ok, latency = future.result()
+
+            latencies.append(latency)
+
+            if ok:
+                successful += 1
+            else:
+                failed += 1
+
+    total_time = time.perf_counter() - benchmark_start
+
+    avg_latency = (sum(latencies) / len(latencies)) * 1000
+    throughput = successful / total_time
+
+    results.append(
+        (
+            users,
+            successful,
+            failed,
+            total_time,
+            avg_latency,
+            throughput,
+        )
+    )
 
     print(f"Successful Queries : {successful}")
     print(f"Failed Queries     : {failed}")
-    print(f"Average Latency    : {average_latency:.2f} ms")
-    print(f"Minimum Latency    : {minimum_latency:.2f} ms")
-    print(f"Maximum Latency    : {maximum_latency:.2f} ms")
-    print(f"Total Time         : {overall_time:.2f} sec")
+    print(f"Total Time         : {total_time:.2f} sec")
+    print(f"Avg Latency        : {avg_latency:.2f} ms")
     print(f"Throughput         : {throughput:.2f} queries/sec")
 
-    print("=" * 80)
+# ==========================================================
+# Final Report
+# ==========================================================
 
-else:
+print()
+print("=" * 100)
+print("CONCURRENCY MATRIX")
+print("=" * 100)
 
-    print("All queries failed.")
+print(
+    f"{'Users':<10}"
+    f"{'Success':<12}"
+    f"{'Failed':<10}"
+    f"{'Time(s)':<12}"
+    f"{'Avg(ms)':<12}"
+    f"{'Throughput':<15}"
+)
+
+print("-" * 100)
+
+for row in results:
+
+    users, success, failed, total, latency, throughput = row
+
+    print(
+        f"{users:<10}"
+        f"{success:<12}"
+        f"{failed:<10}"
+        f"{total:<12.2f}"
+        f"{latency:<12.2f}"
+        f"{throughput:<15.2f}"
+    )
+
+print("=" * 100)
