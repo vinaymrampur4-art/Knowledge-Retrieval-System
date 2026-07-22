@@ -131,6 +131,21 @@ def search_via_query(
         query="Explain APIRouter"
     """
 
+    # ----------------------------------------------------------
+    # Validate top_k
+    # ----------------------------------------------------------
+
+    MAX_TOP_K = 15
+
+    if top_k < 1:
+        raise ValueError("top_k must be at least 1.")
+
+    if top_k > MAX_TOP_K:
+        raise ValueError(
+            f"top_k cannot exceed {MAX_TOP_K}. "
+            "Higher values are not supported."
+        )
+
     request = SearchRequest(
         repository_name=repository_name,
         query=query,
