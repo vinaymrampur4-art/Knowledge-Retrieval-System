@@ -128,11 +128,30 @@ def search_via_query(
         )
 
     Explain APIRouter
-
-        query="Explain APIRouter"
     """
+    MAX_TOP_K = 15
 
-    # ==========================================================
+    if top_k < 1:
+        raise ValueError("top_k must be at least 1.")
+
+    if top_k > MAX_TOP_K:
+        raise ValueError(
+            f"top_k cannot exceed {MAX_TOP_K}. "
+            "Higher values are not supported."
+        )
+
+    request = SearchRequest(
+        repository_name=repository_name,
+        query=query,
+        collection_name=collection_name,
+        top_k=top_k,
+        alpha=alpha,
+        filter=filter,
+    )
+
+    return execute_search(request)
+
+# ==========================================================
 # GRANULARITY SEARCH
 # ==========================================================
 
@@ -225,32 +244,6 @@ def search_by_granularity(
         request=request,
         granularity=granularity,
     )
-
-    # ----------------------------------------------------------
-    # Validate top_k
-    # ----------------------------------------------------------
-
-    MAX_TOP_K = 15
-
-    if top_k < 1:
-        raise ValueError("top_k must be at least 1.")
-
-    if top_k > MAX_TOP_K:
-        raise ValueError(
-            f"top_k cannot exceed {MAX_TOP_K}. "
-            "Higher values are not supported."
-        )
-
-    request = SearchRequest(
-        repository_name=repository_name,
-        query=query,
-        collection_name=collection_name,
-        top_k=top_k,
-        alpha=alpha,
-        filter=filter,
-    )
-
-    return execute_search(request)
 
 
 # ==========================================================

@@ -1,29 +1,94 @@
 # Knowledge Retrieval System (KRS)
 
-A hybrid code retrieval system that indexes Python repositories and provides semantic and keyword-based code search through an MCP (Model Context Protocol) server.
+A hybrid semantic code retrieval system that indexes Python repositories and provides intelligent code search through an MCP (Model Context Protocol) server.
 
-The system combines AST-based parsing, vector embeddings, BM25 retrieval, reranking, and metadata filtering to enable efficient repository exploration and code understanding.
+The Knowledge Retrieval System (KRS) combines Abstract Syntax Tree (AST) parsing, semantic chunking, dense vector retrieval, BM25 lexical search, Reciprocal Rank Fusion (RRF), CrossEncoder reranking, and metadata filtering to enable efficient repository exploration and code understanding.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Retrieval Pipeline](#retrieval-pipeline)
+- [Project Structure](#project-structure)
+- [Technologies](#technologies)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [MCP Tools](#mcp-tools)
+- [Indexed Collections](#indexed-collections)
+- [Chunking](#chunking)
+- [Metadata Filtering](#metadata-filtering)
+- [Performance](#performance)
+- [Future Improvements](#future-improvements)
+- [License](#license)
 
 ---
 
 ## Features
 
-- AST-based repository parsing
-- Semantic AST-aware code chunking
+- AST-based Python repository parsing
+- Semantic AST-aware chunking
 - Configurable chunk splitting
-- Dense semantic retrieval using BGE embeddings
-- BM25 keyword retrieval
-- Hybrid retrieval pipeline
+- Dense semantic retrieval using Sentence Transformers
+- BM25 lexical retrieval
+- Hybrid retrieval (Dense + BM25)
 - Reciprocal Rank Fusion (RRF)
 - CrossEncoder reranking
 - Metadata filtering
-- Native ChromaDB metadata filtering
-- ChromaDB vector storage
+- Native ChromaDB filtering
+- Repository-aware indexing
+- Search by repository granularity
+- Incremental synchronization
+- Full repository indexing
 - Repository statistics and reports
 - MCP server integration
 - Configurable embedding models
 - Configurable reranker models
-- Repository exploration tools
+- Retrieval latency measurement
+- Concurrent retrieval benchmarking
+- Excel benchmark report generation
+
+---
+
+## System Architecture
+
+```text
+                GitHub Repository
+                        │
+                        ▼
+               Repository Parser
+                        │
+                        ▼
+                 AST Parsing
+                        │
+                        ▼
+              Semantic Chunking
+                        │
+                        ▼
+             Embedding Generation
+                        │
+         ┌──────────────┴──────────────┐
+         ▼                             ▼
+   ChromaDB Vector Index          BM25 Index
+         │                             │
+         └──────────────┬──────────────┘
+                        ▼
+                Hybrid Retriever
+                        ▼
+          Reciprocal Rank Fusion
+                        ▼
+            CrossEncoder Reranker
+                        ▼
+             Metadata Filtering
+                        ▼
+              Final Ranked Results
+                        ▼
+                  MCP Server
+                        ▼
+                 AI / MCP Client
+```
 
 ---
 
@@ -31,26 +96,39 @@ The system combines AST-based parsing, vector embeddings, BM25 retrieval, rerank
 
 ```text
 Repository
-    ↓
+      │
+      ▼
 Repository Parser
-    ↓
+      │
+      ▼
 AST Parsing
-    ↓
+      │
+      ▼
 Document Generation
-    ↓
+      │
+      ▼
+Semantic Chunking
+      │
+      ▼
 Embedding Generation
-    ↓
-BM25 Index + ChromaDB Index
-    ↓
-Dense Retrieval + BM25 Retrieval
-    ↓
+      │
+      ├───────────────┐
+      ▼               ▼
+ BM25 Index      ChromaDB
+      │               │
+      ▼               ▼
+BM25 Search    Dense Retrieval
+      └──────┬────────┘
+             ▼
 Reciprocal Rank Fusion (RRF)
-    ↓
+             ▼
 CrossEncoder Reranker
-    ↓
+             ▼
 Metadata Filtering
-    ↓
-MCP Server
+             ▼
+Final Ranked Results
+             ▼
+MCP Server Response
 ```
 
 ---
@@ -65,6 +143,7 @@ Knowledge-Retrieval-System/
 │   ├── core/
 │   ├── embedding/
 │   ├── exporter/
+│   ├── incremental_sync/
 │   ├── indexing/
 │   ├── parser/
 │   ├── reports/
@@ -73,71 +152,73 @@ Knowledge-Retrieval-System/
 │   └── vectordb/
 │
 ├── mcp_server/
-│
 ├── repositories/
-│
+├── outputs/
+├── logs/
 ├── tests/
 │
-├── outputs/
-│
-├── README.md
+├── run.py
+├── .env.example
 ├── requirements.txt
-└── .env
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## Technologies Used
+## Technologies
 
-- Python
-- FastMCP
-- ChromaDB
-- Sentence Transformers
-- BAAI BGE Small Embeddings
-- CrossEncoder
-- BM25
-- FastAPI
-- Tree-Sitter
-- Pydantic
-- HuggingFace Transformers
+| Category | Technology |
+|---|---|
+| Language | Python |
+| Parser | Tree-Sitter |
+| Vector Database | ChromaDB |
+| Embeddings | Sentence Transformers (BAAI/bge-small-en-v1.5) |
+| Sparse Retrieval | BM25 |
+| Hybrid Ranking | Reciprocal Rank Fusion (RRF) |
+| Reranker | CrossEncoder |
+| MCP Framework | FastMCP |
+| API Framework | FastAPI |
+| Validation | Pydantic |
+| ML Framework | HuggingFace Transformers |
 
 ---
 
 ## Installation
 
-Clone the repository:
+**Clone the repository**
 
 ```bash
 git clone https://github.com/vinaymrampur4-art/Knowledge-Retrieval-System.git
 ```
 
-Move into the project directory:
+**Move into the project**
 
 ```bash
 cd Knowledge-Retrieval-System
 ```
 
-Create a virtual environment:
+**Create a virtual environment**
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the environment:
+**Activate the environment**
 
-### Windows
+Windows
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### Linux / macOS
+Linux / macOS
 
 ```bash
 source .venv/bin/activate
 ```
 
-Install dependencies:
+**Install dependencies**
 
 ```bash
 pip install -r requirements.txt
@@ -147,73 +228,99 @@ pip install -r requirements.txt
 
 ## Configuration
 
-Project configuration is managed through the `.env` file.
+Copy the example environment file:
 
-Example:
-
-```env
-EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
-
-RERANKER_MODEL=cross-encoder/ms-marco-MiniLM-L-6-v2
-
-CHROMA_DB_PATH=chroma_db
-
-DEFAULT_TOP_K=5
-
-MAX_RESULTS=20
-
-CHUNK_MAX_TOKENS=500
+```bash
+cp .env.example .env
 ```
+
+Configure the required environment variables. Important settings include:
+
+- Repository location
+- Embedding model
+- Reranker model
+- ChromaDB location
+- MCP server configuration
+- Retrieval parameters
 
 ---
 
-## Building the Index
+## Usage
 
-Generate BM25 indexes and vector embeddings:
+The project provides a unified command-line interface through `run.py`.
+
+| Command | Description |
+|---|---|
+| `python run.py index` | Build repository indexes |
+| `python run.py server` | Start the MCP server |
+| `python run.py sync` | Run incremental synchronization |
+| `python run.py benchmark` | Run concurrency benchmark |
+
+### Build Repository Index
 
 ```bash
-python -m tests.test_index_pipeline
+python run.py index
 ```
 
----
+This command:
 
-## Running the MCP Server
+- Parses the repository
+- Generates AST documents
+- Performs semantic chunking
+- Creates embeddings
+- Builds BM25 indexes
+- Indexes documents into ChromaDB
 
-Start the MCP server:
+### Start MCP Server
 
 ```bash
-python -m mcp_server.server
+python run.py server
 ```
 
 Default configuration:
 
-```text
-Host: 127.0.0.1
-Port: 8000
-Endpoint: /mcp
+| Setting | Value |
+|---|---|
+| Host | 127.0.0.1 |
+| Port | 8000 |
+| Endpoint | /mcp |
+
+### Incremental Synchronization
+
+```bash
+python run.py sync
 ```
+
+Indexes only modified repository files without rebuilding the complete index.
+
+### Run Concurrency Benchmark
+
+```bash
+python run.py benchmark
+```
+
+Measures concurrent retrieval performance and exports benchmark statistics to Excel.
 
 ---
 
 ## MCP Tools
 
-The MCP server currently provides:
-
-### Search Tools
+**Search Tools**
 
 - Search Repository
-- Search Methods
 - Search Classes
+- Search Methods
 - Search Functions
 - Search Files
 - Search Code Blocks
+- Search by Granularity
 
-### Lookup Tools
+**Lookup Tools**
 
 - Lookup by ID
 - Lookup by Metadata Attributes
 
-### Reporting Tools
+**Reporting Tools**
 
 - Repository Statistics
 - Repository Reports
@@ -221,28 +328,28 @@ The MCP server currently provides:
 - Branch Reports
 - Class Reports
 - Method Reports
-- Complete Repository Dashboard
+- Repository Dashboard
 
 ---
 
 ## Indexed Collections
 
-The retrieval system maintains multiple collections to improve retrieval quality.
+The system maintains dedicated collections for different code constructs:
 
-- Files Collection
-- Classes Collection
-- Methods Collection
-- Functions Collection
-- Code Blocks Collection
+- Files
+- Classes
+- Methods
+- Functions
+- Code Blocks
 
-Hybrid retrieval searches across these collections and merges results using Reciprocal Rank Fusion (RRF).
-
+Hybrid retrieval performs parallel dense and BM25 retrieval across all indexed collections, merges results using Reciprocal Rank Fusion (RRF), and reranks them using a CrossEncoder before returning the final ranked results.
+---
 
 ## Chunking
 
-The system includes an AST-aware semantic chunking engine.
+KRS performs AST-aware semantic chunking.
 
-Chunk types include:
+Supported chunk types include:
 
 - Classes
 - Methods
@@ -250,25 +357,25 @@ Chunk types include:
 - Imports
 - Constants
 
-Large semantic chunks are automatically split into embedding-sized chunks using configurable token limits.
+Large semantic chunks are automatically divided into embedding-sized chunks while preserving the logical structure of the source code.
 
-Chunk splitting preserves code structure by splitting on line boundaries rather than exact token boundaries.
+---
 
-## Supported Metadata Filters
+## Metadata Filtering
 
-The retrieval engine supports both native ChromaDB filters and retrieval-level filters.
+Supported filter operators:
 
-Supported operators:
-
-- equals
-- contains
-- startswith
-- endswith
-- !=
-- >
-- >=
-- <
-- <=
+| Operator | Description |
+|---|---|
+| `equals` | Exact match |
+| `contains` | Substring match |
+| `startswith` | Prefix match |
+| `endswith` | Suffix match |
+| `!=` | Not equal |
+| `>` | Greater than |
+| `>=` | Greater than or equal |
+| `<` | Less than |
+| `<=` | Less than or equal |
 
 Example:
 
@@ -282,61 +389,35 @@ SearchFilter(
 
 ---
 
-## Running with Docker
+## Performance
 
-Build the image:
+KRS includes benchmarking for:
 
-```bash
-docker compose build
-```
+- Dense retrieval latency
+- BM25 retrieval latency
+- Hybrid retrieval latency
+- Reciprocal Rank Fusion latency
+- CrossEncoder reranking latency
+- Total search latency
+- Concurrent throughput
+- Average response time
+- Minimum response time
+- Maximum response time
 
-Start the MCP server:
-
-```bash
-docker compose up
-```
-
-The server will be available at:
-
-```text
-http://localhost:8000/mcp
-```
-
-Stop the server:
-
-```bash
-docker compose down
-```
-
-
-## Current Capabilities
-
-- Repository Parsing
-- AST Chunking
-- Dense Retrieval
-- Sparse Retrieval
-- Hybrid Retrieval
-- RRF Fusion
-- CrossEncoder Reranking
-- Metadata Filtering
-- Repository Statistics
-- MCP Integration
+Benchmark reports are exported to Excel under the `outputs/` directory.
 
 ---
 
 ## Future Improvements
 
-Planned improvements include:
-
-- Compound metadata filters (`AND`, `OR`, `NOT`)
-- Retrieval evaluation metrics
-- Incremental indexing
-- Docker deployment
+- Retrieval quality evaluation (Precision@K, Recall@K, MRR, nDCG)
+- Compound metadata filters (AND / OR / NOT)
 - Remote ChromaDB support
-- Extended project documentation
+- Docker deployment
+- Multi-language repository support
 
 ---
 
 ## License
 
-This project was developed for educational, research, and internship purposes.
+This project was developed as part of the **Tech Mahindra Internship** and is intended for educational, research, and intelligent code retrieval purposes.

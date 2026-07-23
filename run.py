@@ -1,66 +1,75 @@
 """
 run.py
 
-Entry point for the Knowledge Retrieval System.
+Unified entry point for the Knowledge Retrieval System (KRS).
+
+Usage:
+
+    python run.py index
+    python run.py server
+    python run.py sync
+    python run.py benchmark
+    python run.py help
 """
 
-from app.core.config import REPOSITORY_FOLDER
-from app.parser.repository_loader import RepositoryLoader
-from app.parser.ast_parser import ASTParser
-from app.writers.output_writer import OutputWriter
+import subprocess
+import sys
+
+
+COMMANDS = {
+    "index": ["-m", "tests.test_index_pipeline"],
+    "server": ["-m", "mcp_server.server"],
+    "sync": ["-m", "tests.test_incremental_sync"],
+    "benchmark": ["-m", "tests.test_concurrency"],
+}
+
+
+def print_help():
+    print()
+    print("=" * 70)
+    print("Knowledge Retrieval System")
+    print("=" * 70)
+    print()
+    print("Available Commands:\n")
+    print("  index      Build parser output, embeddings and indexes")
+    print("  server     Start the MCP server")
+    print("  sync       Run Incremental Sync")
+    print("  benchmark  Run concurrency benchmark")
+    print("  help       Show this help message")
+    print()
+    print("Examples:")
+    print("  python run.py index")
+    print("  python run.py server")
+    print("  python run.py sync")
+    print("  python run.py benchmark")
+    print()
 
 
 def main():
-    """
-    Main execution flow.
-    """
 
-    import sys
+    if len(sys.argv) != 2:
+        print_help()
+        return
 
-    repository_name = (
-        sys.argv[1]
-        if len(sys.argv) > 1
-        else "fastapi-master"
-    )
+    command = sys.argv[1].lower()
 
-    # -----------------------------------------
-    # Load Repository
-    # -----------------------------------------
+    if command in ("help", "-h", "--help"):
+        print_help()
+        return
 
-    loader = RepositoryLoader(repository_name)
+    if command not in COMMANDS:
+        print(f"\nUnknown command: {command}")
+        print_help()
+        return
 
-    python_files = loader.discover_files()
-
-    # -----------------------------------------
-    # Parse Repository
-    # -----------------------------------------
-
-    parser = ASTParser()
-
-    result = parser.parse(python_files,loader.repository_path,)
-
-    # -----------------------------------------
-    # Write Outputs
-    # -----------------------------------------
-
-    output_path = OutputWriter.write(
-        repository_name=repository_name,
-        result=result,
-    )
-
-    # -----------------------------------------
-    # Summary
-    # -----------------------------------------
-
-    print()
-
-    print("=" * 60)
-
-    print("Repository parsed successfully.")
-
-    print(f"Output written to:\n{output_path}")
-
-    print("=" * 60)
+    try:
+        subprocess.run(
+            [sys.executable] + COMMANDS[command],
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        print(f"\n'{command}' failed.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
