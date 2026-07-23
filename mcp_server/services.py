@@ -112,12 +112,26 @@ branch_report_service = BranchReportService()
 complete_stats_service = CompleteStatsService()
 
 # ==========================================================
+# GRANULARITY MAP
+# ==========================================================
+
+GRANULARITY_MAP = {
+    "all": None,
+    "files": [COLLECTION_MAP["files"]],
+    "classes": [COLLECTION_MAP["classes"]],
+    "methods": [COLLECTION_MAP["methods"]],
+    "functions": [COLLECTION_MAP["functions"]],
+    "code_blocks": [COLLECTION_MAP["code_blocks"]],
+}
+
+# ==========================================================
 # SEARCH SERVICE
 # ==========================================================
 
 
 def execute_search(
     request: SearchRequest,
+    collections: list[str] | None = None,
 ) -> SearchResponse:
     """
     Execute hybrid search.
@@ -125,9 +139,11 @@ def execute_search(
 
     start_time = time.perf_counter()
 
-    collections = get_collection(
-        request.collection_name,
-    )
+    if collections is None:
+
+        collections = get_collection(
+            request.collection_name,
+        )
 
     print("=" * 80)
     print("SERVICE FILTER")
@@ -176,6 +192,27 @@ def execute_search(
 
         results=response_results,
 
+    )
+
+def execute_granularity_search(
+    request: SearchRequest,
+    granularity: str,
+) -> SearchResponse:
+    """
+    Execute hybrid search on a specific granularity.
+    """
+
+    granularity = granularity.lower()
+
+    if granularity not in GRANULARITY_MAP:
+        raise ValueError(
+            f"Unsupported granularity '{granularity}'. "
+            f"Supported values: {', '.join(GRANULARITY_MAP.keys())}"
+        )
+
+    return execute_search(
+    request=request,
+    collections=GRANULARITY_MAP[granularity],
     )
 
 

@@ -23,6 +23,7 @@ from mcp_server.models import (
 
 from mcp_server.services import (
     execute_search,
+    execute_granularity_search,
     execute_lookup,
     execute_attribute_lookup,
     check_index_stats,
@@ -130,6 +131,100 @@ def search_via_query(
 
         query="Explain APIRouter"
     """
+
+    # ==========================================================
+# GRANULARITY SEARCH
+# ==========================================================
+
+@mcp.tool()
+def search_by_granularity(
+    repository_name: str,
+    query: str,
+    granularity: str,
+    filter: SearchFilter | None = None,
+    top_k: int = 5,
+    alpha: float = 0.8,
+) -> SearchResponse:
+    """
+    Search the indexed repository at a specific granularity.
+
+    Granularity controls which indexed collection is searched.
+
+    Supported values
+    ----------------
+    • all
+    • files
+    • classes
+    • methods
+    • functions
+    • code_blocks
+
+    Parameters
+    ----------
+    repository_name : str
+        Repository to search.
+
+    query : str
+        Natural language search query.
+
+    granularity : str
+        Level of abstraction to search.
+
+    filter : SearchFilter | None
+        Optional metadata filter.
+
+    top_k : int
+        Maximum number of results.
+
+    alpha : float
+        Hybrid retrieval weight.
+
+    Returns
+    -------
+    SearchResponse
+
+    Examples
+    --------
+    Search only classes
+
+        granularity="classes"
+
+    Search only methods
+
+        granularity="methods"
+
+    Search only code
+
+        granularity="code_blocks"
+
+    Search every collection
+
+        granularity="all"
+    """
+
+    MAX_TOP_K = 15
+
+    if top_k < 1:
+        raise ValueError("top_k must be at least 1.")
+
+    if top_k > MAX_TOP_K:
+        raise ValueError(
+            f"top_k cannot exceed {MAX_TOP_K}."
+        )
+
+    request = SearchRequest(
+        repository_name=repository_name,
+        query=query,
+        collection_name=None,
+        top_k=top_k,
+        alpha=alpha,
+        filter=filter,
+    )
+
+    return execute_granularity_search(
+        request=request,
+        granularity=granularity,
+    )
 
     # ----------------------------------------------------------
     # Validate top_k
